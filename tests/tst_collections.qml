@@ -6,7 +6,7 @@ TestCase {
     name: "CollectionsTests"
 
     function test_set() {
-        var set = new Pollyfills.Set()
+        var set = new Polyfills.Set()
         set.add(4)
         set.add(5)
         set.add(4)

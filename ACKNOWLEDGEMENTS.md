@@ -1,6 +1,6 @@
 # Acknowledgements
 
-**The QuickFill pollyfills library is based on [Aurelia Pollyfills](https://github.com/aurelia/polyfills). The rest of this fill is from the Aurelia Pollyfills ACKNOWLEDGEMENTS file.**
+**The QuickFill polyfills library is based on [Aurelia Polyfills](https://github.com/aurelia/polyfills). The rest of this fill is from the Aurelia Polyfills ACKNOWLEDGEMENTS file.**
 
 The String, Number and Array polyfills come from the MDN documentation. The collections, Symbol and Object.assign polyfills come from https://github.com/WebReflection. The Reflect.construct polyfill is based on the CoreJS implementation. Many thanks to the individuals who worked so hard on these implementations. Licenses are included below.
 
