@@ -76,6 +76,7 @@ def qmlify(filename, base_dir, build_dir, use_polyfills=True):
         post_header += 'var Set = _Polyfills.Set\n'
         post_header += 'var Symbol = _Polyfills.Symbol\n'
         post_header += 'var Reflect = _Polyfills.Reflect\n'
+        post_header += 'var Promise = _Polyfills.Promise\n'
 
     # Convert npm-style requires to QML imports
 

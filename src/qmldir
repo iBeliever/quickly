@@ -1,3 +1,4 @@
 module QuickFill
 
-Polyfills 0.1 index.js
+Polyfills 0.1 polyfills.js
+Promise 0.1 promise.js
