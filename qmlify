@@ -5,10 +5,12 @@ from shutil import copy
 import argparse
 
 define = r'\nObject.defineProperty\(exports, "__esModule", \{\n\s*value: true\n\s*\}\);\n'
-export_import = r'Object.defineProperty\(exports, \'([\$\w]+)\', \{\n\s*enumerable: true,\n\s*get: function get\(\) \{\n\s*return (.*).\1;\n\s*\}\n\s*\}\);'
-require_as = r'\nvar ([\$\w]+) = require\(\'(.+)\'\);\n'
+export_import = r'Object.defineProperty\(exports, \'(.+)\', \{\n\s*enumerable: true,\n\s*get: function get\(\) \{\n\s*return (.*).\1;\n\s*\}\n\s*\}\);'
+require_as = r'\nvar (.+) = require\([\'\"](.+)[\'\"]\);\n'
 require = r'\nrequire\(\'(.+)\'\);\n'
-export = r'var ([\$\w]+) = exports.\1 ='
+export = r'var (.+) = exports.\1 ='
+require_default = 'function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }'
+new_require_default = 'function _interopRequireDefault(obj) { return { default: obj.defaultExport }; }'
 
 dependency_map = {}
 
@@ -77,6 +79,10 @@ def qmlify(filename, base_dir, build_dir, use_polyfills=True):
         post_header += 'var Symbol = _Polyfills.Symbol\n'
         post_header += 'var Reflect = _Polyfills.Reflect\n'
         post_header += 'var Promise = _Polyfills.Promise\n'
+        post_header += 'var fetch = _Polyfills.fetch\n'
+        post_header += 'var Request = _Polyfills.Request\n'
+        post_header += 'var Response = _Polyfills.Response\n'
+        post_header += 'var Headers = _Polyfills.Headers\n'
 
     # Convert npm-style requires to QML imports
 
@@ -118,18 +124,22 @@ def qmlify(filename, base_dir, build_dir, use_polyfills=True):
 
     header += '\n' + post_header + '\n'
 
+    text = text.replace(require_default, new_require_default)
+
     text = re.sub(require_as, '', text)
     text = re.sub(require, '', text)
 
-    # Remove the esModule export
-    text = re.sub(define, '', text)
+    # Qmlify the esModule export
+    text = re.sub(define, 'var __esModule = true;\n', text)
+
+    text = re.sub(r'exports.default = (.+);\n', r'var defaultExport = \1;\n', text)
 
     # QML doesn't use the exports property; all top-levels are exported
     text = re.sub(export, r'var \1 =', text)
     text = re.sub(export_import, r'var \1 = \2.\1;', text)
-    text = re.sub(r'\n(exports.[\$\w]+\s*=\s*)+ undefined;\n', '\n', text)
-    text = re.sub(r'exports.([\$\w]+) = \1;\n', '', text)
-    text = re.sub(r'exports.([\$\w]+) = _\1;\n', r'var \1 = _\1;\n', text)
+    text = re.sub(r'\n(exports\.(.+) = )+undefined;\n', '\n', text)
+    text = re.sub(r'exports\.(.+) = \1;\n', '', text)
+    text = re.sub(r'exports\.(.+) = _\1;\n', r'var \1 = _\1;\n', text)
 
     text = header + text
 

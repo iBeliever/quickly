@@ -23,6 +23,7 @@ The following pollyfills are included:
   - Reflect
   - Symbol
   - Promise
+  - fetch, Request, Response, Headers
 
 The QuickFill library is automatically imported into your ES6 code by default, and requires no additional action on your part. Just use the additional methods and classes as you would with a built-in JS method or class. To disable the polyfill, pass `--no-polyfills` to the `qmlify` script.
 
@@ -53,6 +54,22 @@ For convenience, the `Promise` class and static `Promise` methods (`resolve`, `r
             var promise = new Promise.Promise()
 
             Promise.resolve(...)
+        }
+    }
+
+The `fetch` API is available on the main `Pollyfills` type, but for a more readable API, is also available on a `Http` type like this:
+
+    import QtQuick 2.4
+    import QuickFill 0.1
+
+    Item {
+        Component.onCompleted: {
+            Http.fetch('http://www.google.com')
+                .then(function(response) {
+                    console.log(response.text())
+                }).catch(function(error) {
+                    console.log(error)
+                })
         }
     }
 

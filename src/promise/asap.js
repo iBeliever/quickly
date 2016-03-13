@@ -1,3 +1,5 @@
+import {setTimeout} from '../timeout'
+
 var len = 0;
 var vertxNext;
 var customSchedulerFn;
