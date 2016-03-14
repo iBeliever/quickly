@@ -4,13 +4,25 @@ import subprocess
 from shutil import copy
 import argparse
 
-require_as = r'\nvar (.+) = require\([\'\"](.+)[\'\"]\);\n'
-require = r'\nrequire\(\'(.+)\'\);\n'
+available_modules = {}
+
+polyfills = [
+    'WeakMap', 'Map', 'WeakSet', 'Set', 'Symbol', 'Reflect',
+    'Promise', 'fetch', 'Request', 'Response', 'Headers'
+]
+
+post_header = '''
+var __filename = Qt.resolvedUrl('{}').substring(7);
+var __dirname = __filename.substring(0, __filename.lastIndexOf('/'));
+
+var module = {{ exports: {{}} }};
+var exports = module.exports;
+'''
+
+require_as = r'var ([_\w\d]+) = require\([\'\"](.+)[\'\"]\);\n'
+require = r'require\([\'\"](.+)[\'\"]\)'
 export_import = r'Object.defineProperty\(exports, \'(.+)\', \{\n\s*enumerable: true,\n\s*get: function get\(\) \{\n\s*return (.*).\1;\n\s*\}\n\s*\}\);'
 export_default_import = r'exports\.(.*) = (.*)\.default;\n'
-
-dependency_map = {}
-modules_map = {}
 
 def find_module_files():
     qml_dir = subprocess.check_output(['qmake', '-query', 'QT_INSTALL_QML']).decode('utf-8').strip()
@@ -21,6 +33,14 @@ def find_module_files():
                  modules.append(os.path.join(root, file))
     return modules
 
+def build_modules_map():
+    for filename in find_module_files():
+        yaml = load_yaml(filename)
+        for name, qml_import in yaml.get('exports', {}).items():
+            # TODO: Add duplicate checking
+            # TODO: Only allow QML modules to export types in the own module
+            available_modules[name] = qml_import
+
 def load_yaml(fileName):
     from yaml import load
     try:
@@ -30,145 +50,204 @@ def load_yaml(fileName):
     stream = open(fileName, "r")
     return load(stream, Loader=Loader)
 
-def build_modules_map():
-    for filename in find_module_files():
-        yaml = load_yaml(filename)
-        for name, qml_import in yaml.get('exports', {}).items():
-            modules_map[name] = qml_import
-
-
 class DependencyCycle(BaseException):
     def __init__(self, chain):
         super().__init__()
         self.chain = chain
 
-def check_dependency(name, target, chain=None):
-    if name not in dependency_map:
-        return
-    dependencies = dependency_map[name]
+class QMLify(object):
+    def __init__(self, build_dir, package_info, use_polyfills=True, use_babel=True):
+        self.build_dir = build_dir
+        self.use_polyfills = use_polyfills
+        self.use_babel = use_babel
+        self.dependency_map = {}
 
-    if chain is None:
-        chain = [target, name]
-
-    for dep in dependencies:
-        new_chain = chain + [dep]
-        if dep == target:
-            raise DependencyCycle(new_chain)
+        if isinstance(package_info, str):
+            self.package_info = load_yaml(package_info)
         else:
-            check_dependency(dep, target, new_chain)
+            self.package_info = package_info
 
-def register_dependency(filename, dependency):
-    if filename not in dependency_map:
-        dependency_map[filename] = []
-    dependency_map[filename].append(dependency)
+    def check_dependency(self, name, target, chain=None):
+        if name not in self.dependency_map:
+            return
+        dependencies = self.dependency_map[name]
 
-    check_dependency(dependency, filename)
+        if chain is None:
+            chain = [target, name]
 
-def qmlify(filename, base_dir, build_dir, package_info, use_polyfills=True):
-    dirname = os.path.dirname(filename)
-    basename = os.path.basename(filename)
-    rel_filename = os.path.relpath(filename, base_dir)
-    out_filename = os.path.join(build_dir, rel_filename)
-    out_dirname = os.path.dirname(out_filename)
+        for dep in dependencies:
+            new_chain = chain + [dep]
+            if dep == target:
+                raise DependencyCycle(new_chain)
+            else:
+                self.check_dependency(dep, target, new_chain)
 
-    if os.path.exists(out_filename) and (os.path.getmtime(out_filename) >= os.path.getmtime(filename) and
-                                         os.path.getmtime(out_filename) >= os.path.getmtime(__file__)):
-        return
+    def register_dependency(self, filename, dependency):
+        if filename not in self.dependency_map:
+            self.dependency_map[filename] = []
+        self.dependency_map[filename].append(dependency)
 
-    print(' - ' + filename)
+        self.check_dependency(dependency, filename)
 
-    if not os.path.exists(out_dirname):
-        os.makedirs(out_dirname)
+    def build(self, path, base_dir=None):
+        if os.path.isdir(path):
+            for dirname, subdirs, files in os.walk(path):
+                if os.path.exists(self.build_dir) and os.path.samefile(self.build_dir, dirname):
+                    continue
+                for filename in files:
+                    self.build(os.path.join(dirname, filename), path)
+        else:
+            if base_dir is None:
+                base_dir = os.path.dirname(path)
+            file = QMLifyFile(self, path, base_dir)
+            file.build()
 
-    if not filename.endswith('.js'):
-        copy(filename, out_filename)
-        return
+class QMLifyFile(object):
+    def __init__(self, qmlify, filename, base_dir):
+        self.qmlify = qmlify
+        self.filename = filename
+        self.base_dir = base_dir
 
-    subprocess.run(['babel', filename, '-o', out_filename], check=True)
+        self.dirname = os.path.dirname(filename)
+        self.basename = os.path.basename(filename)
+        self.rel_filename = os.path.relpath(filename, base_dir)
 
-    with open(out_filename) as f:
-        text = f.read()
+        if qmlify.build_dir:
+            self.out_filename = os.path.join(qmlify.build_dir, self.rel_filename)
+            self.out_dirname = os.path.dirname(self.out_filename)
+        else:
+            self.out_filename = None
+            self.out_dirname = None
 
-    header = '.pragma library\n'
-    post_header = 'var __filename = String(Qt.resolvedUrl(\'{}\')).substring(7);\nvar __dirname = __filename.substring(0, __filename.lastIndexOf(\'/\'));\nvar exports = {{}};\n'.format(basename)
+    @property
+    def needs_build(self):
+        return (self.out_filename is None or
+                not os.path.exists(self.out_filename) or
+                os.path.getmtime(self.filename) > os.path.getmtime(self.out_filename) or
+                os.path.getmtime(__file__) > os.path.getmtime(self.out_filename))
 
-    if use_polyfills:
-        polyfills = [
-            'WeakMap', 'Map', 'WeakSet', 'Set', 'Symbol', 'Reflect',
-            'Promise', 'fetch', 'Request', 'Response', 'Headers'
-        ]
-        header += '.import QuickFill 0.1 as QML_QuickFill\n'
-        post_header += 'var _Polyfills = QML_QuickFill.Polyfills.exports\n'
+    def babelify(self):
+        return subprocess.check_output(['babel', self.filename]).decode('utf-8')
+
+    def build(self):
+        if not self.needs_build:
+            return
+
+        if self.qmlify.build_dir:
+            print(' - ' + self.filename)
+
+        if self.out_dirname is not None and not os.path.exists(self.out_dirname):
+            os.makedirs(self.out_dirname)
+
+        if not self.filename.endswith('.js'):
+            if self.out_filename is None:
+                raise Exception('Cannot copy non-JS files without a build directory')
+
+            copy(self.filename, self.out_filename)
+            return
+
+        if self.qmlify.use_babel:
+            self.text = self.babelify()
+        else:
+            with open(self.filename) as f:
+                self.text = f.read()
+
+        self.header = '.pragma library\n'
+        self.post_header = post_header.format(self.basename)
+
+        if self.qmlify.use_polyfills:
+            self.add_polyfills()
+
+        self.build_imports()
+        self.fix_exports()
+
+        self.header += self.post_header + '\n'
+
+        self.text = self.header + self.text
+
+        if self.out_filename is not None:
+            with open(self.out_filename, 'w') as file:
+                file.write(self.text)
+        else:
+            print(self.text)
+
+    def add_polyfills(self):
+        self.header += '.import QuickFill 0.1 as QML_QuickFill\n'
+        self.post_header += 'var _Polyfills = QML_QuickFill.Polyfills.module.exports\n'
         for polyfill in polyfills:
-            post_header += 'var {} = _Polyfills.{}\n'.format(polyfill, polyfill)
+            self.post_header += 'var {} = _Polyfills.{}\n'.format(polyfill, polyfill)
 
-    # Convert npm-style requires to QML imports
+    def build_imports(self):
+        self.replace(require_as, self.replace_require)
+        self.replace(require, self.replace_require)
 
-    def qmlify_require(name, import_path):
-        nonlocal header
-        nonlocal post_header
+    def fix_exports(self):
+        self.replace(export_import, r'var \1 = exports.\1 = \2.\1;')
+        self.replace(export_default_import, r'var \1 = exports.\1 = \2.default;')
+
+    def replace(self, regex, replacement):
+        self.text = re.sub(regex, replacement, self.text)
+
+    def parse_import(import_path):
+        module = available_modules[import_path]
+        if ' ' in module:
+            module, version = module.split(' ')
+        if import_path in package_info.get('dependencies', {}):
+            version = package_info.get('dependencies', {}).get(import_path)
+
+        if version is None:
+            print('No version specified and latest version not specified: ' + import_path)
+
+        qml_module, qml_type = module.split('/')
+
+        return (qml_module, qml_type, version)
+
+    def module_var(self, import_path):
+        if import_path.startswith('./'):
+            import_path = import_path[2:]
+        while import_path.startswith('../'):
+            import_path = '_' + import_path[2:]
+
+        return 'QML_' + import_path.replace('/', '_')
+
+    def replace_require(self, match):
+        require_as = len(match.groups()) == 2
+
+        if require_as:
+            name = match.group(1)
+            import_path = match.group(2)
+            import_as = 'QML' + name
+        else:
+            import_path = match.group(1)
+            import_as = self.module_var(import_path)
+            name = None
 
         if import_path.startswith('./') or import_path.startswith('../'):
             if '.js' not in import_path:
                 import_path += '.js'
-            header += '.import "{}" as QML{}\n'.format(import_path, name)
-            post_header += 'var {} = QML{}.exports;\n'.format(name, name)
-        elif import_path in modules_map:
-            module = modules_map[import_path]
-            if ' ' in module:
-                module, version = module.split(' ')
-            if import_path in package_info.get('dependencies', {}):
-                version = package_info.get('dependencies', {}).get(import_path)
+            self.header += '.import "{}" as {}\n'.format(import_path, import_as)
 
-            if version is None:
-                print('No version specified and latest version not specified: ' + import_path)
+            resolved_filename = os.path.abspath(self.filename)
+            resolved_import_path = os.path.abspath(os.path.join(self.dirname, import_path))
 
-            qml_module, qml_type = module.split('/')
+            self.qmlify.register_dependency(resolved_filename, resolved_import_path)
 
-            header += '.import {} {} as QML{}\n'.format(qml_module, version, name)
-            post_header += 'var {name} = QML{name}.{qml_type}.exports ? QML{name}.{qml_type}.exports : QML{name}.{qml_type};\n'.format(name=name, qml_type=qml_type)
+            require = '{}.module.exports'.format(import_as)
+        elif import_path in available_modules:
+            # TODO: Maybe add dependency cycle checking to full modules
+            qml_module, qml_type, version = self.parse_import(import_path)
+
+            self.header += '.import {} {} as {}\n'.format(qml_module, version, import_as)
+
+            require = '({name}.{qml_type}.module ? {name}.{qml_type}.module.exports : {name}.{qml_type})'.format(name=import_as, qml_type=qml_type)
         else:
+            # TODO: Check if a local file exists and suggest that
             raise Exception('Module not found: ' + import_path)
 
-
-        # Dependency graph stuff
-
-        resolved_filename = os.path.abspath(filename)
-        resolved_import_path = os.path.abspath(os.path.join(dirname, import_path))
-
-        register_dependency(resolved_filename, resolved_import_path)
-
-    for (name, import_path) in re.findall(require_as, text):
-        qmlify_require(name, import_path)
-
-    side_effect_index = 0
-
-    for import_path in re.findall(require, text):
-        name = '_side_effect' + str(side_effect_index)
-        side_effect_index += 1
-
-        qmlify_require(name, import_path)
-
-    header += '\n' + post_header + '\n'
-
-    text = re.sub(require_as, '', text)
-    text = re.sub(require, '', text)
-    text = re.sub(export_import, r'var \1 = exports.\1 = \2.\1;', text)
-    text = re.sub(export_default_import, r'var \1 = exports.\1 = \2.default;', text)
-    export_default_import
-
-    text = header + text
-
-    with open(out_filename, 'w') as file:
-        file.write(text)
-
-
-def qmlify_dir(path, build_dir, package_info, use_polyfills=True):
-    for dirname, subdirs, files in os.walk(path):
-        if os.path.exists(build_dir) and os.path.samefile(build_dir, dirname):
-            continue
-        for filename in files:
-            qmlify(os.path.join(dirname, filename), path, build_dir, package_info, use_polyfills)
+        if require_as:
+            return 'var {name} = {require};\n'.format(name=name, require=require)
+        else:
+            return require
 
 build_modules_map()
 
@@ -189,36 +268,43 @@ class ModulesAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         print('{:25} {}'.format('ES6 Module Alias', 'Actual QML import'))
         print('-' * 70)
-        for name, qml_module in modules_map.items():
+        for name, qml_module in available_modules.items():
             print('{:25} {}'.format(name, qml_module))
         parser.exit()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='QMLify ES6 source code.')
     parser.add_argument('source_files', metavar='source', type=str, nargs='+',
-                       help='A ES6 source file to compile')
-    parser.add_argument('build_dir', metavar='out', type=str,
-                       help='The build directory to output built files to')
+                       help='one or more ES6 source files to compile')
+    parser.add_argument('-o', '--output',
+                        help='the build directory to output built files to')
     parser.add_argument('--no-polyfills', dest='use_polyfills', action='store_false',
-                       help='Don\'t include the ES6 polyfills')
+                        help='don\'t include the ES6 polyfills')
     parser.add_argument('--modules', dest='show_modules', action=ModulesAction,
-                        help='Show a list of QML modules mapped to ES6 module names')
+                        help='show a list of QML modules mapped to ES6 module names')
 
     args = parser.parse_args()
 
-    build_dir = args.build_dir
+    build_dir = args.output
 
     if os.path.exists('package.yml'):
-        package_info = load_yaml('package.yml')
+        package_info = 'package.yml'
     else:
         package_info = {}
 
+    if build_dir is None:
+        if len(args.source_files) > 1:
+            print('Use the --output argument to specify a build folder when building more than one file')
+            sys.exit(1)
+        if os.path.isdir(args.source_files[0]):
+            print('Use the --output argument to specify a build folder when building a directory')
+            sys.exit(1)
+
+    qmlify = QMLify(build_dir, package_info, args.use_polyfills)
+
     try:
         for filename in args.source_files:
-            if os.path.isdir(filename):
-                qmlify_dir(filename, build_dir, package_info, args.use_polyfills)
-            else:
-                qmlify(filename, os.path.dirname(filename), build_dir, package_info, args.use_polyfills)
+            qmlify.build(filename)
     except DependencyCycle as cycle:
         print('Dependency cycle:\n - {}'.format('\n - '.join([os.path.relpath(path, os.getcwd())
                                                               for path in cycle.chain])))
