@@ -90,7 +90,7 @@ def qmlify(filename, base_dir, build_dir, package_info, use_polyfills=True):
         text = f.read()
 
     header = '.pragma library\n'
-    post_header = 'var exports = {};\n'
+    post_header = 'var __filename = String(Qt.resolvedUrl(\'{}\')).substring(7);\nvar __dirname = __filename.substring(0, __filename.lastIndexOf(\'/\'));\nvar exports = {{}};\n'.format(basename)
 
     if use_polyfills:
         polyfills = [

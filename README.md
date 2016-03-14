@@ -1,9 +1,11 @@
 QMLify
 ======
 
-QMLify is a build tool which uses Babel to compile ES6 code into the standard ES5 Javascript that QML understands. Because QML uses its own syntax for imports, QMLify wraps Babel to transpile the `require`/`exports` code that Babel outputs into `.import` code that QML uses.
+QMLify is a build tool and QML module which provides an ES6/node-like environment for Javascript used in QML.
 
-In addition to the `qmlify` transpiler, there is also a QML module called `QuickFill` which adds some polyfills to the QML JS environment, including extensions on `Array`, `String`, and `Object`, plus the `Symbol`, `Reflector`, `Promise`, and collection classes, and the `fetch` API. The polyfill library is based on [Aurelia Polyfills](https://github.com/aurelia/polyfills) with some slight tweaks to work around the lack of globals support in QML.
+The build tool, `qmlify`, uses Babel to compile ES6 code into the standard ES5 Javascript and then applys additional transforms to target the custom JS environment that QML uses. Because QML uses its own syntax for imports, QMLify wraps Babel to transpile the `require`/`exports` code that Babel outputs into `.import` code that QML uses.
+
+In additional to the actual ES6 language features, QMLify provides some polyfills to add missing ES6 classes or methods as well as some standard features from Node.js such as `__dirname` and `__filename`. The polyfills are available both in ES6 as normal classes and methods, and from QML using the `QuickFill` module. See the Polyfills of this README for more details on how to use them.
 
 ### Installation
 
@@ -37,6 +39,10 @@ Now just run `qmlify` on your src directory like this:
 This will transpile all JS files and copy any other files to the `build` directory. Now, run or reference your main QML file from the `build` directory instead of the `src` directory.
 
 Happy modern JSing!
+
+### Node.js features
+
+QMLify provides some features that mimic a Node.js environment. Currently, the only features are `__dirname` and `__filename`, though more features are planned.
 
 ### Polyfills
 
@@ -187,3 +193,5 @@ Note that the `package.yml` is used to both list dependencies and/or exports, de
 
  - Documentation on integrating with CMake and a C++ app (instead of simple QML)
  - Possible support for ES6 directly in QML
+ - ES6-only tests that work with the QtQuick Test framework
+ - More Node.js features
