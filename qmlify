@@ -216,7 +216,7 @@ class QMLifyFile(object):
         if require_as:
             name = match.group(1)
             import_path = match.group(2)
-            import_as = 'QML' + name
+            import_as = 'QML' + name if name[0] == '_' else 'QML_' + name
         else:
             import_path = match.group(1)
             import_as = self.module_var(import_path)
@@ -280,6 +280,8 @@ if __name__ == '__main__':
                         help='the build directory to output built files to')
     parser.add_argument('--no-polyfills', dest='use_polyfills', action='store_false',
                         help='don\'t include the ES6 polyfills')
+    parser.add_argument('--no-babel', dest='use_babel', action='store_false',
+                        help='don\'t run babel as part of the qmlify steps')
     parser.add_argument('--modules', dest='show_modules', action=ModulesAction,
                         help='show a list of QML modules mapped to ES6 module names')
 
@@ -300,7 +302,7 @@ if __name__ == '__main__':
             print('Use the --output argument to specify a build folder when building a directory')
             sys.exit(1)
 
-    qmlify = QMLify(build_dir, package_info, args.use_polyfills)
+    qmlify = QMLify(build_dir, package_info, args.use_polyfills, args.use_babel)
 
     try:
         for filename in args.source_files:
