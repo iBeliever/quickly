@@ -9,6 +9,6 @@ export {Symbol} from './core/symbol'
 
 export {fetch, Request, Response, Headers} from './fetch'
 
-export {Promise} from './promise/promise'
+export Promise from './promise/promise'
 
 export {setTimeout} from './timeout'
