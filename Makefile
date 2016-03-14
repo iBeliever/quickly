@@ -8,7 +8,7 @@ build:
 
 install: build
 	mkdir -p $(QML_DIR)
-	cp -r build/* $(QML_DIR)
+	cp -r build/* package.yml $(QML_DIR)
 	cp qmlify $(DEST_DIR)
 
 check: install
