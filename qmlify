@@ -3,6 +3,7 @@ import sys, re, os, os.path
 import subprocess
 from shutil import copy
 import argparse
+import json
 
 available_modules = {}
 
@@ -61,6 +62,8 @@ class QMLify(object):
         self.use_polyfills = use_polyfills
         self.use_babel = use_babel
         self.dependency_map = {}
+        self.modules = {}
+        self.base_dir = os.getcwd()
 
         if isinstance(package_info, str):
             self.package_info = load_yaml(package_info)
@@ -102,18 +105,77 @@ class QMLify(object):
             file = QMLifyFile(self, path, base_dir)
             file.build()
 
+    def parse_import(self, import_path):
+        module = available_modules[import_path]
+        if ' ' in module:
+            module, version = module.split(' ')
+        if import_path in self.package_info.get('dependencies', {}):
+            version = self.package_info.get('dependencies', {}).get(import_path)
+
+        if version is None:
+            print('No version specified and latest version not specified: ' + import_path)
+
+        qml_module, qml_type = module.split('/')
+
+        return (qml_module, qml_type, version)
+
+    def require(self, module_name, source_file, import_as):
+        if '.js' in module_name:
+            correct_name = './' + module_name[:-3]
+            raise Exception('Did you mean to import/require \'{}\' instead of \'{}\'?'.format(correct_name,
+                                                                                              module_name))
+
+        if module_name in self.modules:
+            module = self.modules[module_name]
+        else:
+            module = NPMModule(self, module_name)
+
+            if module.exists:
+                module.require()
+                self.modules[module_name] = module
+            else:
+                module = None
+
+        if module:
+            main_filename = module.main_filename
+            rel_filename = os.path.relpath(main_filename, os.path.dirname(source_file))
+
+            return ('.import "{}" as {}\n'.format(rel_filename, import_as),
+                    '{}.module.exports'.format(import_as))
+        elif module_name in available_modules:
+            # TODO: Maybe add dependency cycle checking to full modules
+            qml_module, qml_type, version = self.parse_import(module_name)
+
+            return ('.import {} {} as {}\n'.format(qml_module, version, import_as),
+                    '({name}.{qml_type}.module ? {name}.{qml_type}.module.exports : {name}.{qml_type})'.format(name=import_as, qml_type=qml_type))
+        else:
+            dirname = os.path.dirname(filename)
+            if os.path.exists(os.path.join(dirname, module_name + '.js')):
+                correct_name = './' + module_name + '.js'
+                raise Exception('Did you mean to import/require \'{}\' instead of \'{}\'?'.format(correct_name,
+                                                                                                  module_name))
+            else:
+                raise Exception('Module not exported by any QML modules and not found in node_modules: ' + module_name)
+
+
 class QMLifyFile(object):
-    def __init__(self, qmlify, filename, base_dir):
+    def __init__(self, qmlify, filename, base_dir, build_dir=None, use_babel=None):
         self.qmlify = qmlify
         self.filename = filename
         self.base_dir = base_dir
+        self.dependencies = []
 
         self.dirname = os.path.dirname(filename)
         self.basename = os.path.basename(filename)
         self.rel_filename = os.path.relpath(filename, base_dir)
 
-        if qmlify.build_dir:
-            self.out_filename = os.path.join(qmlify.build_dir, self.rel_filename)
+        self.use_babel = use_babel if use_babel is not None else qmlify.use_babel
+
+        if build_dir is None:
+            build_dir = self.qmlify.build_dir
+
+        if build_dir:
+            self.out_filename = os.path.join(build_dir, self.rel_filename)
             self.out_dirname = os.path.dirname(self.out_filename)
         else:
             self.out_filename = None
@@ -146,7 +208,7 @@ class QMLifyFile(object):
             copy(self.filename, self.out_filename)
             return
 
-        if self.qmlify.use_babel:
+        if self.use_babel:
             self.text = self.babelify()
         else:
             with open(self.filename) as f:
@@ -188,20 +250,6 @@ class QMLifyFile(object):
     def replace(self, regex, replacement):
         self.text = re.sub(regex, replacement, self.text)
 
-    def parse_import(import_path):
-        module = available_modules[import_path]
-        if ' ' in module:
-            module, version = module.split(' ')
-        if import_path in package_info.get('dependencies', {}):
-            version = package_info.get('dependencies', {}).get(import_path)
-
-        if version is None:
-            print('No version specified and latest version not specified: ' + import_path)
-
-        qml_module, qml_type = module.split('/')
-
-        return (qml_module, qml_type, version)
-
     def module_var(self, import_path):
         if import_path.startswith('./'):
             import_path = import_path[2:]
@@ -225,6 +273,7 @@ class QMLifyFile(object):
         if import_path.startswith('./') or import_path.startswith('../'):
             if '.js' not in import_path:
                 import_path += '.js'
+            self.dependencies.append(os.path.abspath(os.path.join(self.dirname, import_path)))
             self.header += '.import "{}" as {}\n'.format(import_path, import_as)
 
             resolved_filename = os.path.abspath(self.filename)
@@ -233,21 +282,56 @@ class QMLifyFile(object):
             self.qmlify.register_dependency(resolved_filename, resolved_import_path)
 
             require = '{}.module.exports'.format(import_as)
-        elif import_path in available_modules:
-            # TODO: Maybe add dependency cycle checking to full modules
-            qml_module, qml_type, version = self.parse_import(import_path)
-
-            self.header += '.import {} {} as {}\n'.format(qml_module, version, import_as)
-
-            require = '({name}.{qml_type}.module ? {name}.{qml_type}.module.exports : {name}.{qml_type})'.format(name=import_as, qml_type=qml_type)
         else:
-            # TODO: Check if a local file exists and suggest that
-            raise Exception('Module not found: ' + import_path)
+            header, require = self.qmlify.require(import_path, self.out_filename, import_as)
+
+            self.header += header
 
         if require_as:
             return 'var {name} = {require};\n'.format(name=name, require=require)
         else:
             return require
+
+class NPMModule(object):
+    def __init__(self, qmlify, name):
+        self.qmlify = qmlify
+        self.name = name
+
+    @property
+    def src_dirname(self):
+        return os.path.abspath(os.path.join(self.qmlify.base_dir, 'node_modules', self.name))
+
+    @property
+    def dirname(self):
+        return os.path.abspath(os.path.join(self.qmlify.build_dir, 'dependencies', self.name))
+
+    @property
+    def exists(self):
+        return os.path.exists(self.src_dirname)
+
+    @property
+    def main(self):
+        return self.package_info.get('main', 'index.js')
+
+    @property
+    def src_filename(self):
+        return os.path.abspath(os.path.join(self.src_dirname, self.main))
+
+    @property
+    def main_filename(self):
+        return os.path.abspath(os.path.join(self.dirname, self.main))
+
+    def require(self):
+        package_file = os.path.join(self.src_dirname, 'package.json')
+        with open(package_file) as f:
+            self.package_info = json.load(f)
+        self.build(self.src_filename)
+
+    def build(self, filename):
+        file = QMLifyFile(self.qmlify, filename, self.src_dirname, build_dir=self.dirname, use_babel=False)
+        file.build()
+        for filename in file.dependencies:
+            self.build(filename)
 
 build_modules_map()
 
@@ -301,6 +385,8 @@ if __name__ == '__main__':
         if os.path.isdir(args.source_files[0]):
             print('Use the --output argument to specify a build folder when building a directory')
             sys.exit(1)
+    else:
+        build_dir = os.path.abspath(build_dir)
 
     qmlify = QMLify(build_dir, package_info, args.use_polyfills, args.use_babel)
 

@@ -3,3 +3,4 @@ module QuickFill
 Polyfills 0.1 polyfills/polyfills.js
 Promise 0.1 polyfills/promise.js
 Http 0.1 polyfills/fetch.js
+Url 0.1 core/url.js

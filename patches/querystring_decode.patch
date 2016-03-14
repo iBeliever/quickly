@@ -1,0 +1,8 @@
+35c35
+< function hasOwnProperty(obj, prop) {
+---
+> function _hasOwnProperty(obj, prop) {
+78c78
+<     if (!hasOwnProperty(obj, k)) {
+---
+>     if (!_hasOwnProperty(obj, k)) {
