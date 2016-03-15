@@ -23,11 +23,16 @@ For those who would prefer to stick with standard QML-specific Javascript, you c
   Distributing your awesome new module for other developers to use.
 
 
-Table of Contents
------------------
+Offline Reading
+---------------
+
+Download the docs in `pdf <https://media.readthedocs.org/pdf/quickly/latest/quickly.pdf>`_
+or `epub <https://media.readthedocs.org/epub/quickly/latest/quickly.epub>`_
+formats for offline reading.
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
 
    tutorial
    qmlify

@@ -32,7 +32,7 @@ In ES6, you would do something like this::
         console.log('test')
     }
 
-And use it in your file like this:
+And use it in your file like this::
 
     import {test} from 'test'
 
