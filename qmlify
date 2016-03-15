@@ -237,8 +237,8 @@ class QMLifyFile(object):
 
     def add_polyfills(self):
         # TODO: Do this via require()
-        self.header += '.import QuickFill 0.1 as QML_QuickFill\n'
-        self.post_header += 'var _Polyfills = QML_QuickFill.Polyfills.global\n'
+        self.header += '.import Quickly 0.1 as QML_Quickly\n'
+        self.post_header += 'var _Polyfills = QML_Quickly.Polyfills.global\n'
         for polyfill in polyfills:
             self.post_header += 'var {} = _Polyfills.{}\n'.format(polyfill, polyfill)
 

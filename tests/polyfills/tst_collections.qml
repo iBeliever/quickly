@@ -1,6 +1,6 @@
 import QtQuick 2.3
 import QtTest 1.0
-import QuickFill 0.1
+import Quickly 0.1
 
 TestCase {
     name: "CollectionsTests"

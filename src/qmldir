@@ -1,4 +1,4 @@
-module QuickFill
+module Quickly
 
 Polyfills 0.1 polyfills/polyfills.js
 Promise 0.1 polyfills/promise.js

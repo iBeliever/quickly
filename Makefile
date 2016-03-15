@@ -1,4 +1,4 @@
-QML_DIR = $(shell qmake -query QT_INSTALL_QML)/QuickFill
+QML_DIR = $(shell qmake -query QT_INSTALL_QML)/Quickly
 DEST_DIR = /usr/local/bin
 
 .PHONY: build install check example

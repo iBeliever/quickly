@@ -1,4 +1,4 @@
-The QuickFill polyfills library is based on [Aurelia Polyfills](https://github.com/aurelia/polyfills), with the exception of the Promise polyfill, which is based on [ES6 Promise](https://github.com/stefanpenner/es6-promise), and the Fetch polyfill, which is based on [GitHub's Fetch polyfill](https://github.com/github/fetch).
+The Quickly polyfills library is based on [Aurelia Polyfills](https://github.com/aurelia/polyfills), with the exception of the Promise polyfill, which is based on [ES6 Promise](https://github.com/stefanpenner/es6-promise), and the Fetch polyfill, which is based on [GitHub's Fetch polyfill](https://github.com/github/fetch).
 
 # Fetch Polyfill Copyright
 
