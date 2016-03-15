@@ -5,7 +5,7 @@ Quickly is a build tool and QML module with provides an NodeJS-like ES6 environm
 
 For those who would prefer to stick with standard QML-specific Javascript, you can also do that and still use the Quickly library, which gives you promises, the fetch API, and many polyfills. This is great for longtime QML developers or existing projects that just want to drop in some easy-to-use features from modern JS core libraries.
 
-Check out the documentation for more details, usage, and API documentation.
+Check out the [documentation](http://quickly.readthedocs.org/en/latest/) for more details, usage, and API documentation.
 
 ### Examples
 
