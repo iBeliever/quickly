@@ -24,13 +24,19 @@ def compare(text1, text2, message):
 def run_test(name):
     source_filename = os.path.join(tests_dir, name, 'actual.js')
     expected_filename = os.path.join(tests_dir, name, 'expected.js')
+    output_dirname = os.path.join(tests_dir, name, 'build')
+    output_filename = os.path.join(output_dirname, 'actual.js')
 
     args = [qmlify, '--no-polyfills']
     if 'es5' in name:
         args.append('--no-babel')
     args.append(source_filename)
+    args.append(output_dirname)
 
-    output = subprocess.check_output(args).decode('utf-8').strip() + '\n'
+    subprocess.run(args, check=True)
+
+    with open(output_filename) as f:
+        output = f.read()
 
     with open(expected_filename) as f:
         expected = f.read()

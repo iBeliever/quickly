@@ -6,6 +6,7 @@ var __dirname = __filename.substring(0, __filename.lastIndexOf('/'));
 
 var module = { exports: {} };
 var exports = module.exports;
+var global = {};
 
 'use strict';
 

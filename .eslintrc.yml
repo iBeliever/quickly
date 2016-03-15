@@ -7,6 +7,7 @@ parserOptions:
 globals:
   console: false
   Qt: false
+  global: true
   __filename: false
   __dirname: false
 plugins:
