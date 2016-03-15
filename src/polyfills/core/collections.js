@@ -1,7 +1,7 @@
-import {Symbol} from './symbol'
+import './symbol'
 
 var PLATFORM = {
-    'global': {}
+    'global': global
 };
 
 (function (global) {
@@ -234,5 +234,3 @@ var PLATFORM = {
   }
 
 })(PLATFORM.global);
-
-export const {WeakMap, Map, WeakSet, Set} = PLATFORM.global

@@ -1,5 +1,5 @@
 var PLATFORM = {
-    'global': {}
+    'global': global
 };
 
 (function (Object, GOPS) {'use strict';

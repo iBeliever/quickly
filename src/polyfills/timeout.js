@@ -13,3 +13,5 @@ export function setTimeout(callback, timeout) {
 
     timer.start()
 }
+
+global.setTimeout = setTimeout

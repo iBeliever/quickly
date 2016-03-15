@@ -1,14 +1,14 @@
 import './core/array'
+import './core/collections'
 import './core/number'
 import './core/object'
+import './core/reflect'
 import './core/string'
+import './core/symbol'
 
-export {WeakMap, Map, WeakSet, Set} from './core/collections'
-export {Reflect} from './core/reflect'
-export {Symbol} from './core/symbol'
+import './timeout'
+import './fetch'
 
-export {fetch, Request, Response, Headers} from './fetch'
+import Promise from './promise/promise'
 
-export Promise from './promise/promise'
-
-export {setTimeout} from './timeout'
+global.Promise = Promise

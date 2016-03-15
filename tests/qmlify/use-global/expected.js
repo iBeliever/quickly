@@ -12,6 +12,4 @@ var PI = global.PI = QML_global.global.PI;
 
 'use strict';
 
-QML_global.module.exports;
-
 console.log(PI);

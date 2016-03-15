@@ -1,11 +1,9 @@
 import {Promise} from './promise'
 
-var globals = {};
-
-(function(self) {
+(function(global) {
   'use strict';
 
-  if (self.fetch) {
+  if (global.fetch) {
     return
   }
 
@@ -112,7 +110,7 @@ var globals = {};
   }
 
   var support = {
-    blob: 'FileReader' in self && 'Blob' in self && (function() {
+    blob: 'FileReader' in global && 'Blob' in global && (function() {
       try {
         new Blob();
         return true
@@ -120,8 +118,8 @@ var globals = {};
         return false
       }
     })(),
-    formData: 'FormData' in self,
-    arrayBuffer: 'ArrayBuffer' in self
+    formData: 'FormData' in global,
+    arrayBuffer: 'ArrayBuffer' in global
   }
 
   function Body() {
@@ -324,11 +322,11 @@ var globals = {};
     return new Response(null, {status: status, headers: {location: url}})
   }
 
-  self.Headers = Headers;
-  self.Request = Request;
-  self.Response = Response;
+  global.Headers = Headers;
+  global.Request = Request;
+  global.Response = Response;
 
-  self.fetch = function(input, init) {
+  global.fetch = function(input, init) {
     return new Promise(function(resolve, reject) {
       var request
       if (Request.prototype.isPrototypeOf(input) && !init) {
@@ -388,7 +386,5 @@ var globals = {};
       xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
     })
   }
-  self.fetch.polyfill = true
-})(globals);
-
-export const {fetch, Request, Response, Headers} = globals
+  global.fetch.polyfill = true
+})(global);

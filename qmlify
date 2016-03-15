@@ -23,6 +23,7 @@ var global = {{}};
 
 require_as = r'var ([_\w\d]+) = require\([\'\"]([^\'\"]+)[\'\"]\);\n'
 require = r'require\([\'\"]([^\'\"]+)[\'\"]\)'
+require_effects = r'\nrequire\([\'\"]([^\'\"]+)[\'\"]\);\n'
 export_import = r'Object.defineProperty\(exports, \'(.+)\', \{\n\s*enumerable: true,\n\s*get: function get\(\) \{\n\s*return (.*).\1;\n\s*\}\n\s*\}\);'
 export_default_import = r'exports\.(.*) = (.*)\.default;\n'
 
@@ -52,6 +53,11 @@ def load_yaml(fileName):
     stream = open(fileName, "r")
     return load(stream, Loader=Loader)
 
+def save_yaml(fileName, data):
+    import yaml
+    with open(fileName, 'w') as file:
+        file.write(yaml.dump(data, default_flow_style=False))
+
 class DependencyCycle(BaseException):
     def __init__(self, chain):
         super().__init__()
@@ -71,6 +77,8 @@ class QMLify(object):
             self.package_info = load_yaml(package_info)
         else:
             self.package_info = package_info
+
+        self.load_cache()
 
     def print_info(self):
         json = {name: file.info for name, file in self.files.items()}
@@ -113,14 +121,23 @@ class QMLify(object):
             file.build()
             return file
 
+    def save_cache(self):
+        save_yaml('.qmlify_cache', dict(files=self.cache))
+
+    def load_cache(self):
+        if os.path.exists('.qmlify_cache'):
+            self.cache = load_yaml('.qmlify_cache').get('files', {})
+        else:
+            self.cache = {}
+
 class QMLifyFile(object):
     def __init__(self, qmlify, filename, base_dir, build_dir=None, use_babel=None):
         self.qmlify = qmlify
         self.filename = os.path.relpath(filename, os.getcwd())
         self.base_dir = base_dir
         self.dependencies = []
-        self.globals = []
-        self.imported_globals = []
+        self.globals = set()
+        self.imported_globals = set()
 
         self.dirname = os.path.dirname(filename)
         self.basename = os.path.basename(filename)
@@ -131,15 +148,9 @@ class QMLifyFile(object):
         if build_dir is None:
             build_dir = self.qmlify.build_dir
 
+        self.build_dir = build_dir
         self.out_filename = os.path.join(build_dir, self.rel_filename)
         self.out_dirname = os.path.dirname(self.out_filename)
-
-    @property
-    def info(self):
-        return {
-            'dependencies': [os.path.relpath(dep, self.dirname) for dep in self.dependencies],
-            'globals': self.globals
-        }
 
     @property
     def needs_build(self):
@@ -152,6 +163,8 @@ class QMLifyFile(object):
 
     def build(self):
         if not self.needs_build:
+            if self.filename.endswith('.js'):
+                self.load_cache()
             return
 
         print(' - ' + self.filename)
@@ -169,7 +182,7 @@ class QMLifyFile(object):
             with open(self.filename) as f:
                 self.text = f.read()
 
-        self.globals += re.findall(r'global\.([\w\d_-]+)', self.text)
+        self.globals |= set(re.findall(r'global\.([\w\d_-]+)', self.text))
 
         self.header = '.pragma library\n'
         self.post_header = post_header.format(self.basename) + '\n'
@@ -192,14 +205,35 @@ class QMLifyFile(object):
 
         self.qmlify.files[self.filename] = self
 
+        self.save_cache()
+        self.qmlify.save_cache()
+
+    def save_cache(self):
+        self.qmlify.cache[self.filename] = {
+            'dependencies': [os.path.relpath(dep, self.dirname) for dep in self.dependencies],
+            'globals': list(self.globals)
+        }
+
+    def load_cache(self):
+        info = self.qmlify.cache[self.filename]
+        self.dependencies = [os.path.abspath(os.path.join(self.dirname, dep)) for dep in info['dependencies']]
+        self.globals = set(info['globals'])
+
     def add_polyfills(self):
+        # TODO: Do this via require()
         self.header += '.import QuickFill 0.1 as QML_QuickFill\n'
-        self.post_header += 'var _Polyfills = QML_QuickFill.Polyfills.module.exports\n'
+        self.post_header += 'var _Polyfills = QML_QuickFill.Polyfills.global\n'
         for polyfill in polyfills:
             self.post_header += 'var {} = _Polyfills.{}\n'.format(polyfill, polyfill)
 
     def build_imports(self):
         self.replace(require_as, self.replace_require)
+        for match in re.finditer(require_effects, self.text):
+            self.replace_require(match)
+        self.replace('\n' + require_effects + '\n', '\n\n')
+        self.replace(require_effects + '\n', '\n')
+        self.replace('\n' + require_effects, '\n')
+        self.replace(require_effects, '\n')
         self.replace(require, self.replace_require)
 
     def fix_exports(self):
@@ -244,8 +278,8 @@ class QMLifyFile(object):
         module = available_modules[import_path]
         if ' ' in module:
             module, version = module.split(' ')
-        if import_path in self.package_info.get('dependencies', {}):
-            version = self.package_info.get('dependencies', {}).get(import_path)
+        if import_path in self.qmlify.package_info.get('dependencies', {}):
+            version = self.qmlify.package_info.get('dependencies', {}).get(import_path)
 
         if version is None:
             print('No version specified and latest version not specified: ' + import_path)
@@ -256,10 +290,12 @@ class QMLifyFile(object):
 
     def add_dependency(self, dependency, import_as):
         if isinstance(dependency, QMLifyFile):
-            self.globals += dependency.globals
-            self.imported_globals += dependency.globals
             for name in dependency.globals:
-                self.post_header += 'var {name} = global.{name} = {import_as}.global.{name};\n'.format(name=name, import_as=import_as)
+                if name not in self.imported_globals:
+                    self.post_header += 'var {name} = global.{name} = {import_as}.global.{name};\n'.format(name=name, import_as=import_as)
+            self.globals |= dependency.globals
+            self.imported_globals |= dependency.globals
+
             filename = dependency.filename
         else:
             filename = dependency
@@ -275,7 +311,9 @@ class QMLifyFile(object):
 
         dependency = os.path.abspath(os.path.join(self.dirname, filename))
 
-        qmlified_file = self.qmlify.build(dependency, self.base_dir)
+        qmlified_file = QMLifyFile(self.qmlify, dependency, self.base_dir, build_dir=self.build_dir,
+                                   use_babel=self.use_babel)
+        qmlified_file.build()
 
         self.add_dependency(qmlified_file, import_as)
 
@@ -283,7 +321,7 @@ class QMLifyFile(object):
 
         return '{}.module.exports'.format(import_as)
 
-    def require_npm(import_path, import_as):
+    def require_npm(self, import_path, import_as):
         if '/' in import_path:
             module_name, filename = import_path.split('/', 1)
             filename += '.js'
@@ -291,15 +329,15 @@ class QMLifyFile(object):
             module_name = import_path
             filename = None
 
-        if module_name in self.modules:
-            module = self.modules[module_name]
+        if module_name in self.qmlify.modules:
+            module = self.qmlify.modules[module_name]
         else:
-            module = NPMModule(self, module_name)
+            module = NPMModule(self.qmlify, module_name)
 
             if not module.exists:
                 return None
 
-            self.modules[module_name] = module
+            self.qmlify.modules[module_name] = module
 
         if filename is None:
             filename = module.main_filename
@@ -309,9 +347,8 @@ class QMLifyFile(object):
 
         self.add_dependency(qmlified_file, import_as)
 
-        rel_filename = os.path.relpath(filename, self.dirname)
+        rel_filename = os.path.relpath(filename, self.out_dirname)
 
-        self.add_dependency(import_path)
         self.header += '.import "{}" as {}\n'.format(rel_filename, import_as)
 
         return '{}.module.exports'.format(import_as)
@@ -325,7 +362,7 @@ class QMLifyFile(object):
             # TODO: Maybe add dependency cycle checking to QML modules
             qml_module, qml_type, version = self.parse_import(import_path)
 
-            self.add_dependency(import_path)
+            self.add_dependency(import_path, import_as)
             self.header += '.import {} {} as {}\n'.format(qml_module, version, import_as)
 
             return '({name}.{qml_type}.module ? {name}.{qml_type}.module.exports : {name}.{qml_type})'.format(name=import_as, qml_type=qml_type)
