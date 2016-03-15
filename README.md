@@ -1,197 +1,59 @@
-QMLify
-======
+Quickly
+=======
 
-QMLify is a build tool and QML module which provides an ES6/node-like environment for Javascript used in QML.
+Quickly is a build tool and QML module with provides an NodeJS-like ES6 environment for Javascript used in QML. The goal of the project is to allow you to write awesome modern ES6 Javascript taking advantage of classes, decorators, arrow functions, and best of all, many of the vast array of NPM packages available using the standard ES6 module imports. You can then take that code and use in directly from QML, just as you would with plain, old, QML-specific Javascript. You can even build a library using ES6 and NPM packages, and then distribute that as a standard QML module or QPM package for other developers to use in regular QML or QML-specific Javascript.
 
-The build tool, `qmlify`, uses Babel to compile ES6 code into the standard ES5 Javascript and then applys additional transforms to target the custom JS environment that QML uses. Because QML uses its own syntax for imports, QMLify wraps Babel to transpile the `require`/`exports` code that Babel outputs into `.import` code that QML uses.
+For those who would prefer to stick with standard QML-specific Javascript, you can also do that and still use the Quickly library, which gives you promises, the fetch API, and many polyfills. This is great for longtime QML developers or existing projects that just want to drop in some easy-to-use features from modern JS core libraries.
 
-In additional to the actual ES6 language features, QMLify provides some polyfills to add missing ES6 classes or methods as well as some standard features from Node.js such as `__dirname` and `__filename`. The polyfills are available both in ES6 as normal classes and methods, and from QML using the `QuickFill` module. See the Polyfills of this README for more details on how to use them.
+Check out the documentation for more details, usage, and API documentation.
 
-### Installation
+### Examples
 
-To install the `qmlify` build tool and the `QuickFill` library, just run `make install` from the root of this repository.
+Write modern ES6 like this:
 
-### Build configuration
+    import * as url from 'url'  // Use core Node modules
 
-To use `qmlify`, you will need to the `babel` CLI installed globally using NPM:
+    const data = url.parse('http://www.google.com')
 
-    npm install -g babel-cli
+    // Use the Promise polyfill
 
-You will need to add a `.babelrc` file to tell `babel` (used by `qmlify`) which transformations to apply. Here is a sample `.babelrc` file with ES6 and some additional features enabled:
+    const promise = new Promise((resolve, reject) => {
+        resolve('Why again did we need a promise here?')
+    })
 
-    {
-        "presets": ["es2015", "stage-0"],
-        "plugins": [
-            "transform-decorators-legacy"
-        ]
-    }
+    // Use the Array.prototype.includes() poylfill
 
-Based on the this config file, you will need the following NPM packages saved locally as dev dependencies:
+    const array = ['A', 'B', 'C']
+    console.log(array.includes('B'))
 
-    babel-preset-es2015
-    babel-preset-stage-0
-    babel-plugin-transform-decorators-legacy
+    // Use ES6 classes
 
-Now just run `qmlify` on your src directory like this:
+    export class Document {
+        title = ''
+        body = ''
 
-    qmlify src build
-
-This will transpile all JS files and copy any other files to the `build` directory. Now, run or reference your main QML file from the `build` directory instead of the `src` directory.
-
-Happy modern JSing!
-
-### Node.js features
-
-QMLify provides some features that mimic a Node.js environment. Currently, the only features are `__dirname` and `__filename`, though more features are planned.
-
-### Polyfills
-
-The following pollyfills are included:
-
-  - Array.from
-  - Array.prototype.find
-  - Array.prototype.findIndex
-  - Array.prototype.includes
-  - Number.isNaN
-  - Number.isFinite
-  - Object.assign
-  - String.prototype.endsWith
-  - String.prototype.startsWith
-  - String.prototype.includes
-  - WeakMap, Map, WeakSet, and Set
-  - Reflect
-  - Symbol
-  - Promise
-  - fetch, Request, Response, Headers
-
-The QuickFill library is automatically imported into your ES6 code by default, and requires no additional action on your part. Just use the additional methods and classes as you would with a built-in JS method or class. To disable the polyfill, pass `--no-polyfills` to the `qmlify` script.
-
-To use the polyfills in QML, import `QuickFill 0.1`, and the polyfilled classes will be available on the `Pollyfills` type. See the following example:
-
-    import QtQuick 2.4
-    import QuickFill 0.1
-
-    Item {
-        Component.onCompleted: {
-            var set = new Polyfills.Set()
-
-            set.add(4)
-            set.add(5)
-            set.add(4)
-
-            console.log(set.size) // Prints 2
+        constructor(title, body) {
+            this.title = title
+            this.body = body
         }
     }
 
-For convenience, the `Promise` class and static `Promise` methods (`resolve`, `reject`, `all`, and `race`) are also available on the `Promise` type like this:
+And compile that into JS that QML understands:
 
-    import QtQuick 2.4
-    import QuickFill 0.1
-
-    Item {
-        Component.onCompleted: {
-            var promise = new Promise.Promise()
-
-            Promise.resolve(...)
-        }
-    }
-
-The `fetch` API is available on the main `Pollyfills` type, but for a more readable API, is also available on a `Http` type like this:
-
-    import QtQuick 2.4
-    import QuickFill 0.1
+    import "file.js" as JS
 
     Item {
         Component.onCompleted: {
-            Http.fetch('http://www.google.com')
-                .then(function(response) {
-                    console.log(response.text())
-                }).catch(function(error) {
-                    console.log(error)
-                })
+            var doc = new JS.Document('Hello, World', 'Contents')
         }
     }
 
-Note that while the static methods are directly exposed on the `Promise` type, you must use `new Promise.Promise()` to create a promise object.
+### Licensing
 
-### ES6-style module names
+**QMLify**
 
-In QML, you might have a JS library file named `test.js` that looks like this:
+QMLify is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-    .pragma library
+**Quickly core modules**
 
-    function test() {
-        console.log('test')
-    }
-
-Along with the corresponding `qmldir` file:
-
-    module ExampleModule
-
-    Test 0.1 test.js
-
-If you wanted to use the `test()` function in another JS file in your app or in another QML module, you'd do something like this:
-
-    .pragma library
-    .import ExampleModule 0.1 as Example
-
-    Example.Test.test()
-
-In ES6, you would do something like this:
-
-    // test.js
-    export function test() {
-        console.log('test')
-    }
-
-And use it in your file like this:
-
-    import {test} from 'test'
-
-    test()
-
-To bridge the gap between the QML way of doing things and the ES6 style, `qmlify` lets you "export" specific files from QML modules as ES6 modules. To implement the previous example in QMLified ES6, you'd do something like this:
-
-    // test.js
-    export function test() {
-        console.log('test')
-    }
-
-    // qmldir
-    module ExampleModule
-
-    Test 0.1 test.js
-
-    // package.yml
-    exports:
-        test: ExampleModule/Test
-
-Optionally, you can specify the default or latest version in the export:
-
-    // package.yml
-    exports:
-        test: ExampleModule/Test 0.1
-
-And install the `package.yml` file along side the `qmldir` and QML/JS files. Now in your app you'd do the following:
-
-    // app.js
-    import {test} from 'test'
-
-    test()
-
-    // package.yml
-    dependencies:
-       test: 0.1
-
-If a default version is available and you want to use that, you can leave the dependency out of the `package.yml` file.
-
-Note that the `package.yml` is used to both list dependencies and/or exports, depending on your needs. To see all available QMLified modules, run:
-
-    qmlify --modules
-
-### Upcoming features
-
- - Documentation on integrating with CMake and a C++ app (instead of simple QML)
- - Possible support for ES6 directly in QML
- - ES6-only tests that work with the QtQuick Test framework
- - More Node.js features
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
