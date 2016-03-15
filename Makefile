@@ -25,3 +25,7 @@ check_core: install
 	qmltestrunner -input tests/core/build
 
 check: check_qmlify check_polyfills check_core
+
+example: install
+	./qmlify example example/build
+	qmlscene example/build/main.qml
