@@ -3,7 +3,8 @@ import path from 'path'
 import assert from 'assert'
 
 export class DependencyManager {
-    constructor() {
+    constructor(qmlify) {
+        this.qmlify = qmlify
         this.dependencyMap = {}
     }
 
@@ -14,7 +15,7 @@ export class DependencyManager {
         const attempts = [this.requireLocalFile]
 
         for (const attempt of attempts) {
-            const dependency = attempt(importPath, context)
+            const dependency = attempt.call(this, importPath, context)
 
             if (dependency) {
                 return dependency
@@ -32,13 +33,14 @@ export class DependencyManager {
             throw new ImportError(`Don't include the '.js' extension when importing local files: ${importPath}`)
 
         const filename = path.normalize(`${importPath}.js`)
+        const src_filename = context.resolve(filename)
 
-        if (!fs.existsSync(context.resolve(filename)))
-            throw new ImportError(`Unable to find local file: ${filename} (resolved to ${context.resolve(filename)})`)
+        if (!fs.existsSync(src_filename))
+            throw new ImportError(`Unable to find local file: ${filename} (resolved to ${src_filename})`)
 
-        // TODO: Build the local file
+        const file = this.qmlify.build(src_filename)
 
-        return new Dependency(`"${importPath}.js"`, importPath)
+        return new Dependency(`"${importPath}.js"`, importPath, file)
     }
 }
 
@@ -47,9 +49,10 @@ class DependencyCycleError extends Error {}
 class ImportError extends Error {}
 
 class Dependency {
-    constructor(id, importPath) {
+    constructor(id, importPath, file) {
         this.id = id
         this.importPath = importPath
+        this.file = file
     }
 
     qualifier(importAs) {

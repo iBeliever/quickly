@@ -3,6 +3,7 @@ import {JSFile} from './jsfile'
 import fs from 'fs'
 import path from 'path'
 import assert from 'assert'
+import 'babel-polyfill'
 import 'source-map-support/register'
 
 export class QMLify {
@@ -14,7 +15,7 @@ export class QMLify {
         this.usePolyfills = polyfills
         this.useBabel = babel
 
-        this.dependencyManager = new DependencyManager()
+        this.dependencyManager = new DependencyManager(this)
 
         if (this.useBabel) {
             this.babelOptions = JSON.parse(fs.readFileSync('.babelrc'))

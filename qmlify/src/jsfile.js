@@ -7,13 +7,15 @@ export class JSFile extends BaseFile {
     postHeader = templates.postHeader
     footer = ''
     globals = []
+    dependencies = {}
 
     get importedGlobals() {
         const globals = {}
 
-        for (const dependency of this.dependencies) {
-            for (const name of Object.keys(dependency.exportedGlobals)) {
-                globals[name] = dependency.exportedGlobals[name]
+        for (const qualifier of Object.keys(this.dependencies)) {
+            const dependency = this.dependencies[qualifier]
+            for (const name of dependency.exportedGlobals) {
+                globals[name] = qualifier
             }
         }
 
@@ -21,11 +23,7 @@ export class JSFile extends BaseFile {
     }
 
     get exportedGlobals() {
-        const globals = this.importedGlobals
-
-        for (const name of this.globals) {
-            globals[name] = this
-        }
+        const globals = Object.keys(this.importedGlobals).concat(this.globals)
 
         return globals
     }
@@ -39,6 +37,7 @@ export class JSFile extends BaseFile {
 
         this.transformRequires()
         this.findAndExportGlobals()
+        this.importGlobals()
 
         this.text = this.text.trim()
         this.header = this.header.trim()
@@ -89,6 +88,16 @@ export class JSFile extends BaseFile {
         }
     }
 
+    importGlobals() {
+        this.postHeader += '\n'
+        
+        for (const name of Object.keys(this.importedGlobals)) {
+            const qualifier = this.importedGlobals[name]
+
+            this.postHeader += `var ${name} = global.${name} = ${qualifier}.global.${name};\n`
+        }
+    }
+
     replaceRequire(match, $1, $2) {
         const [importPath, importAs] = $2 ? [$2, $1] : [$1, null]
 
@@ -99,14 +108,13 @@ export class JSFile extends BaseFile {
 
         this.header += dependency.importStatement(qualifier) + '\n'
 
+        if (dependency.file)
+            this.dependencies[qualifier] = dependency.file
+
         if (importAs) {
             return `var ${importAs} = ${requireStatement};`
         } else {
             return requireStatement
         }
-    }
-
-    addGlobals() {
-
     }
 }
