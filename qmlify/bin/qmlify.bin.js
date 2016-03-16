@@ -3,8 +3,12 @@
 var qmlify = require('../dist/index')
 
 var args = require('yargs')
-    .usage('Usage: $0 [options] source... build_dir')
-    .demand(2)
+    .usage('Usage: $0 [options] source')
+    .demand(1)
+    .alias('d', 'out-dir')
+    .describe('out-dir', 'The directory to output built files to')
+    .alias('o', 'out-file')
+    .describe('out-file', 'The file to output the built file to')
     .default('babel', true)
     .describe('babel', 'Run Babel on the source files')
     .default('polyfills', true)
@@ -13,9 +17,11 @@ var args = require('yargs')
     .alias('h', 'help')
     .argv
 
-var source = args._.slice(0, -1)
-var build_dir = args._.pop()
+var source = args._[0]
+var options = { polyfills: args.polyfills, babel: args.babel }
 
-qmlify(source, build_dir, { polyfills: args.polyfills, babel: args.babel })
-
-console.log(source, build_dir)
+if (args.out_dir) {
+    qmlify.build_dir(source, args.out_dir, options)
+} else {
+    qmlify.build_file(source, args.out_file, options)
+}

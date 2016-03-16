@@ -2,10 +2,15 @@ import {DependencyManager} from './dependencies'
 import {JSFile} from './jsfile'
 import fs from 'fs'
 import path from 'path'
+import assert from 'assert'
+import 'source-map-support/register'
 
 export class QMLify {
-    constructor(build_dir, { polyfills = true, babel = true }) {
-        this.build_dir = build_dir
+    files = []
+
+    constructor(src_dirname, out_dirname, { polyfills = true, babel = true }) {
+        this.src_dirname = src_dirname ? src_dirname : process.cwd()
+        this.out_dirname = out_dirname
         this.usePolyfills = polyfills
         this.useBabel = babel
 
@@ -16,38 +21,65 @@ export class QMLify {
         }
     }
 
-    build(filename, base_dir) {
-        if (!base_dir)
-            base_dir = process.cwd()
+    build_all() {
+        this.build_dir(this.src_dirname)
+    }
 
-        if (isDir(filename)) {
-            const files = fs.readdirSync(filename)
+    save() {
+        for (const file of this.files) {
+            file.save()
+        }
+    }
 
-            for (const subfile of files) {
-                this.build(path.resolve(filename, subfile), filename)
+    build_dir(dirname) {
+        assert.ok(dirname)
+
+        const files = fs.readdirSync(dirname)
+
+        for (const file of files) {
+            const filename = path.resolve(dirname, file)
+
+            if (isDir(filename)) {
+                this.build_dir(filename)
+            } else {
+                this.build(filename)
             }
-        } else if (filename.endsWith('.js')) {
-            const file = new JSFile(this, filename, base_dir)
+        }
+    }
+
+    build(filename) {
+        assert.ok(filename)
+
+        if (filename.endsWith('.js')) {
+            const file = new JSFile(this, filename)
             file.build()
+
+            return file
         } else {
-            console.log(`Unrecognized file type: ${filename}`)
+            console.warn(`Unrecognized file type: ${filename}`)
         }
     }
 }
 
-export default function qmlify(source_files, build_dir, options) {
-    const qmlify = new QMLify(build_dir, options)
+export function build_dir(src_dirname, out_dirname, options) {
+    const qmlify = new QMLify(src_dirname, out_dirname, options)
 
-    for (const file of source_files) {
-        qmlify.build(file)
-    }
+    qmlify.build_all()
+
+    qmlify.save()
+}
+
+export function build_file(src_filename, out_filename, options) {
+    const qmlify = new QMLify(null, null, options)
+
+    const file = qmlify.build(src_filename)
+
+    if (out_filename)
+        file.save(out_filename)
+    else
+        file.dump()
 }
 
 function isDir(filename) {
     return fs.statSync(filename).isDirectory()
 }
-
-// Compat stuff for NodeJS support
-module.exports = qmlify
-module.exports.default = qmlify
-module.exports.QMLify = QMLify

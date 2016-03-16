@@ -6,6 +6,10 @@
   "bin": {
     "qmlify": "bin/qmlify.bin.js"
   },
+  "scripts": {
+    "test": "mocha --compilers js:babel-register",
+    "test:watch": "npm run test -- --watch"
+  },
   "author": "Michael Spencer <sonrisesoftware@gmail.com>",
   "license": "GPL",
   "dependencies": {
@@ -19,6 +23,9 @@
     "eslint": "^2.4.0",
     "eslint-plugin-class-property": "0.0.3",
     "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2"
+    "gulp-babel": "^6.1.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "source-map-support": "^0.4.0",
+    "mocha": "^2.2.5"
   }
 }
