@@ -5,9 +5,29 @@ import * as babel from 'babel-core'
 export class JSFile extends BaseFile {
     header = templates.header
     postHeader = templates.postHeader
+    footer = ''
+    globals = []
 
-    get globals() {
-        return {}
+    get importedGlobals() {
+        const globals = {}
+
+        for (const dependency of this.dependencies) {
+            for (const name of Object.keys(dependency.exportedGlobals)) {
+                globals[name] = dependency.exportedGlobals[name]
+            }
+        }
+
+        return globals
+    }
+
+    get exportedGlobals() {
+        const globals = this.importedGlobals
+
+        for (const name of this.globals) {
+            globals[name] = this
+        }
+
+        return globals
     }
 
     transform() {
@@ -18,15 +38,19 @@ export class JSFile extends BaseFile {
         this.postHeader = this.postHeader.replace('FILENAME', this.basename)
 
         this.transformRequires()
+        this.findAndExportGlobals()
 
         this.text = this.text.trim()
         this.header = this.header.trim()
         this.postHeader = this.postHeader.trim()
+        this.footer = this.footer.trim()
 
         if (this.postHeader)
             this.text = this.postHeader + '\n\n' + this.text
         if (this.header)
             this.text = this.header + '\n\n' + this.text
+        if (this.footer)
+            this.text += '\n\n' + this.footer
 
         this.text += '\n'
     }
@@ -47,6 +71,22 @@ export class JSFile extends BaseFile {
 
         while (this.text.includes('\n\n\n'))
             this.text = this.text.replace('\n\n\n', '\n\n')
+    }
+
+    findAndExportGlobals() {
+        const regex = /global\.([\w\d_]+)/g
+        let match = null
+
+        while ((match = regex.exec(this.text)) !== null) {
+            const name = match[1]
+
+            if (!this.globals.includes(name))
+                this.globals.push(name)
+        }
+
+        for (const name of this.globals) {
+            this.footer += `var ${name} = global.${name};\n`
+        }
     }
 
     replaceRequire(match, $1, $2) {
