@@ -1,6 +1,6 @@
 {
   "name": "qmlify",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A script to qmlify ES6 code and the ES6 polyfills from Aurelia",
   "main": "src/index.js",
   "bin": {

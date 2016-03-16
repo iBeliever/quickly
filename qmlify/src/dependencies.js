@@ -1,47 +1,67 @@
 import fs from 'fs'
 import path from 'path'
 import assert from 'assert'
+import {NPMModule} from './bundle'
 
-export class DependencyManager {
-    constructor(qmlify) {
-        this.qmlify = qmlify
-        this.dependencyMap = {}
-    }
+const dependencyMap = {}
 
-    require(importPath, context) {
-        assert.ok(importPath)
-        assert.ok(context)
+export function require(importPath, context) {
+    assert.ok(importPath)
+    assert.ok(context)
 
-        const attempts = [this.requireLocalFile]
+    const attempts = [requireLocalFile, requireNPMModule]
 
-        for (const attempt of attempts) {
-            const dependency = attempt.call(this, importPath, context)
+    for (const attempt of attempts) {
+        const dependency = attempt(importPath, context)
 
-            if (dependency) {
-                return dependency
-            }
+        if (dependency) {
+            return dependency
         }
-
-        throw new ImportError(`Unable to find module: ${importPath}`)
     }
 
-    requireLocalFile(importPath, context) {
-        if (!importPath.startsWith('./') && !importPath.startsWith('../'))
-            return
+    throw new ImportError(`Unable to find module: ${importPath}`)
+}
 
-        if (importPath.endsWith('.js'))
-            throw new ImportError(`Don't include the '.js' extension when importing local files: ${importPath}`)
+function requireLocalFile(importPath, context) {
+    if (!importPath.startsWith('./') && !importPath.startsWith('../'))
+        return
 
-        const filename = path.normalize(`${importPath}.js`)
-        const src_filename = context.resolve(filename)
+    if (importPath.endsWith('.js'))
+        throw new ImportError(`Don't include the '.js' extension when importing local files: ${importPath}`)
 
-        if (!fs.existsSync(src_filename))
-            throw new ImportError(`Unable to find local file: ${filename} (resolved to ${src_filename})`)
+    const filename = path.normalize(`${importPath}.js`)
+    const src_filename = context.resolve(filename)
 
-        const file = this.qmlify.build(src_filename)
+    if (!fs.existsSync(src_filename))
+        throw new ImportError(`Unable to find local file: ${filename} (resolved to ${src_filename})`)
 
-        return new Dependency(`"${importPath}.js"`, importPath, file)
+    const file = context.bundle.build(src_filename)
+
+    return new Dependency(`"${importPath}.js"`, importPath, file)
+}
+
+function requireNPMModule(importPath, context) {
+    if (importPath.startsWith('./') || importPath.startsWith('../'))
+        return
+
+    let moduleName = importPath
+    let filename = null
+
+    if (importPath.contains('/')) {
+        [moduleName, filename] = importPath.split('/', 1)[0]
     }
+
+    const module = NPMModule.locate(moduleName, context.bundle)
+
+    if (!module)
+        return
+
+    if (!filename)
+        filename = module.main_filename
+
+    const file = module.require(filename)
+
+    return new Dependency(`"${context.relative(file.out_filename)}"`, importPath, file)
 }
 
 class DependencyCycleError extends Error {}

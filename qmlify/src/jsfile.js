@@ -1,4 +1,5 @@
 import {BaseFile} from './basefile'
+import {babelConfig} from './bundle'
 import * as templates from './templates'
 import * as babel from 'babel-core'
 
@@ -29,8 +30,8 @@ export class JSFile extends BaseFile {
     }
 
     transform() {
-        if (this.qmlify.useBabel) {
-            this.text = babel.transform(this.text, this.qmlify.babelOptions).code
+        if (this.useBabel) {
+            this.text = babel.transform(this.text, babelConfig).code
         }
 
         this.postHeader = this.postHeader.replace('FILENAME', this.basename)
@@ -90,7 +91,7 @@ export class JSFile extends BaseFile {
 
     importGlobals() {
         this.postHeader += '\n'
-        
+
         for (const name of Object.keys(this.importedGlobals)) {
             const qualifier = this.importedGlobals[name]
 

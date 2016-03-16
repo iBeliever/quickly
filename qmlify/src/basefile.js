@@ -1,25 +1,31 @@
+import {require} from './dependencies'
 import path from 'path'
 import fs from 'fs'
 
 export class BaseFile {
     dependencies = []
 
-    constructor(qmlify, filename, out_filename) {
-        this.qmlify = qmlify
-        this.filename = path.relative(qmlify.src_dirname, filename)
+    constructor(filename, {bundle, out_filename, useBabel, usePolyfills} = {}) {
+        this.bundle = bundle
+        this.useBabel = useBabel !== undefined ? useBabel : bundle.useBabel
+        this.usePolyfills = usePolyfills !== undefined ? usePolyfills : bundle.usePolyfills
+
+        this.filename = path.relative(bundle.src_dirname, filename)
 
         this.basename = path.basename(this.filename)
-        this.dirname = path.dirname(this.filename)
+        this.local_dirname = path.dirname(this.filename)
 
         this.src_filename = path.resolve('', filename)
         this.src_dirname = path.dirname(this.src_filename)
 
         this.out_filename = out_filename ? out_filename
-                                         : qmlify.out_dirname ? path.resolve(qmlify.out_dirname, this.filename)
+                                         : bundle.out_dirname ? path.resolve(bundle.out_dirname, this.filename)
                                                               : null
         this.out_dirname = this.out_filename ? path.dirname(this.out_filename) : null
+    }
 
-        qmlify.files.push(this)
+    relative(filename) {
+        return path.relative(this.out_dirname, filename)
     }
 
     resolve(localFilename) {
@@ -27,7 +33,7 @@ export class BaseFile {
     }
 
     require(importPath) {
-        return this.qmlify.dependencyManager.require(importPath, this)
+        return require(importPath, this)
     }
 
     build() {
