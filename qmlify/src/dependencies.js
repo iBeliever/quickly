@@ -1,18 +1,20 @@
 import fs from 'fs'
 import path from 'path'
 import assert from 'assert'
-import {NPMModule} from './bundle'
 
 const dependencyMap = {}
+const requireHooks = [requireLocalFile]
+
+export function requireHook(hook) {
+    requireHooks.push(hook)
+}
 
 export function require(importPath, context) {
     assert.ok(importPath)
     assert.ok(context)
 
-    const attempts = [requireLocalFile, requireNPMModule]
-
-    for (const attempt of attempts) {
-        const dependency = attempt(importPath, context)
+    for (const requireHook of requireHooks) {
+        const dependency = requireHook(importPath, context)
 
         if (dependency) {
             return dependency
@@ -40,29 +42,7 @@ function requireLocalFile(importPath, context) {
     return new Dependency(`"${importPath}.js"`, importPath, file)
 }
 
-function requireNPMModule(importPath, context) {
-    if (importPath.startsWith('./') || importPath.startsWith('../'))
-        return
 
-    let moduleName = importPath
-    let filename = null
-
-    if (importPath.contains('/')) {
-        [moduleName, filename] = importPath.split('/', 1)[0]
-    }
-
-    const module = NPMModule.locate(moduleName, context.bundle)
-
-    if (!module)
-        return
-
-    if (!filename)
-        filename = module.main_filename
-
-    const file = module.require(filename)
-
-    return new Dependency(`"${context.relative(file.out_filename)}"`, importPath, file)
-}
 
 class DependencyCycleError extends Error {}
 

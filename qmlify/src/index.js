@@ -1,8 +1,12 @@
 import {build, Bundle} from './bundle'
+import './jsfile'
+import './qmlfile'
+import './npm'
 import 'babel-polyfill'
 import 'source-map-support/register'
 
-export {build, Bundle} from './bundle'
+export {build, registerFileType, Bundle} from './bundle'
+export {BaseFile} from './basefile'
 
 export function build_dir(src_dirname, out_dirname, options) {
     const bundle = new Bundle(src_dirname, out_dirname, options)

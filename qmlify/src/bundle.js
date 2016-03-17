@@ -1,10 +1,10 @@
-import {JSFile} from './jsfile'
 import fs from 'fs'
 import path from 'path'
 import assert from 'assert'
 
 export let babelConfig = null
 const filesCache = {}
+const fileTypes = []
 
 if (fs.existsSync('.babelrc'))
     babelConfig = JSON.parse(fs.readFileSync('.babelrc'))
@@ -29,7 +29,9 @@ export class Bundle {
         for (const file of files) {
             const filename = path.resolve(dirname, file)
 
-            if (isDir(filename)) {
+            if (filename == path.resolve('', this.out_dirname) || filename.endsWith('node_modules')) {
+                continue
+            } else if (isDir(filename)) {
                 this.build_dir(filename)
             } else {
                 this.build(filename)
@@ -42,45 +44,9 @@ export class Bundle {
     }
 
     save() {
-        for (const file of Object.values(this.files)) {
+        for (const file of Object.values(filesCache)) {
             file.save()
         }
-    }
-}
-
-export class NPMModule extends Bundle {
-    constructor(name, parentBundle) {
-        super(path.resolve('node_modules', name), parentBundle.out_dirname, { useBabel: false, usePolyfills: false })
-        this.name = name
-    }
-
-    load() {
-        this.config = JSON.parse(fs.readFileSync(path.join(this.dirname, 'package.json'), 'utf8'))
-    }
-
-    require(filename) {
-        return this.build(filename)
-    }
-
-    get main_filename() {
-        const filename = this.config['main']
-
-        return filename ? filename : 'index.js'
-    }
-
-    get exists() {
-        return fs.existsSync(this.dirname)
-    }
-
-    static locate(name, parentBundle) {
-        const module = NPMModule(name, parentBundle)
-
-        if (!module.exists)
-            return
-
-        module.load()
-
-        return module
     }
 }
 
@@ -102,16 +68,22 @@ export function build(filename, bundle_or_options) {
     if (!options.bundle)
         options.bundle = localBundle
 
-    if (filename.endsWith('.js')) {
-        const file = new JSFile(filename, options)
-        file.build()
+    for (const [regex, fileType] of fileTypes) {
+        if (filename.search(regex) !== -1) {
+            const file = new fileType(filename, options)
+            file.build()
 
-        filesCache[file.src_filename] = file
+            filesCache[file.src_filename] = file
 
-        return file
-    } else {
-        throw new Error(`Unrecognized file type: ${filename}`)
+            return file
+        }
     }
+
+    throw new Error(`File type not recognized: ${filename}`)
+}
+
+export function registerFileType(regex, fileType) {
+    fileTypes.push([regex, fileType])
 }
 
 export const localBundle = new Bundle()

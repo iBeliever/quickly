@@ -20,8 +20,8 @@ var args = require('yargs')
 var source = args._[0]
 var options = { usePolyfills: args.polyfills, useBabel: args.babel }
 
-if (args.out_dir) {
-    qmlify.build_dir(source, args.out_dir, options)
+if (args.outDir) {
+    qmlify.build_dir(source, args.outDir, options)
 } else {
-    qmlify.build_file(source, args.out_file, options)
+    qmlify.build_file(source, args.outFile, options)
 }

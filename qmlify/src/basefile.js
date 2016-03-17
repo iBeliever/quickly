@@ -1,3 +1,4 @@
+import {registerFileType} from './bundle'
 import {require} from './dependencies'
 import path from 'path'
 import fs from 'fs'
@@ -51,5 +52,9 @@ export class BaseFile {
 
     transform() {
         throw new Error('Method not implemented!')
+    }
+
+    static registerFileType(regex) {
+        registerFileType(regex, this)
     }
 }

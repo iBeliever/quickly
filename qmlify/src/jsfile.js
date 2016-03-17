@@ -119,3 +119,5 @@ export class JSFile extends BaseFile {
         }
     }
 }
+
+JSFile.registerFileType(/\.js$/)
