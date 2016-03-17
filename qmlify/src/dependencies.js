@@ -1,3 +1,4 @@
+import ExtendableError from 'es6-error'
 import fs from 'fs'
 import path from 'path'
 import assert from 'assert'
@@ -42,13 +43,7 @@ function requireLocalFile(importPath, context) {
     return new Dependency(`"${importPath}.js"`, importPath, file)
 }
 
-
-
-class DependencyCycleError extends Error {}
-
-class ImportError extends Error {}
-
-class Dependency {
+export class Dependency {
     constructor(id, importPath, file) {
         this.id = id
         this.importPath = importPath
@@ -81,3 +76,7 @@ class Dependency {
         return `require(${qualifier})`
     }
 }
+
+class DependencyCycleError extends ExtendableError {}
+
+class ImportError extends ExtendableError {}

@@ -1,3 +1,4 @@
+import ExtendableError from 'es6-error'
 import fs from 'fs'
 import path from 'path'
 import assert from 'assert'
@@ -34,7 +35,15 @@ export class Bundle {
             } else if (isDir(filename)) {
                 this.build_dir(filename)
             } else {
-                this.build(filename)
+                try {
+                    this.build(filename)
+                } catch (error) {
+                    if (error instanceof FileTypeError) {
+                        console.warn(error.message)
+                    } else {
+                        throw error
+                    }
+                }
             }
         }
     }
@@ -79,8 +88,10 @@ export function build(filename, bundle_or_options) {
         }
     }
 
-    throw new Error(`File type not recognized: ${filename}`)
+    throw new FileTypeError(`File type not recognized: ${filename}`)
 }
+
+export class FileTypeError extends ExtendableError {}
 
 export function registerFileType(regex, fileType) {
     fileTypes.push([regex, fileType])

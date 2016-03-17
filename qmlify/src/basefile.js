@@ -43,7 +43,8 @@ export class BaseFile {
     }
 
     save() {
-        throw new Error('Method not implemented!')
+        mkdirs(this.out_dirname)
+        fs.writeFileSync(this.out_filename, this.text)
     }
 
     dump() {
@@ -57,4 +58,13 @@ export class BaseFile {
     static registerFileType(regex) {
         registerFileType(regex, this)
     }
+}
+
+function mkdirs(filename) {
+    if (fs.existsSync(filename))
+        return
+
+    mkdirs(path.dirname(filename))
+
+    fs.mkdirSync(filename)
 }
