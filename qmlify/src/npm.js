@@ -5,7 +5,8 @@ import path from 'path'
 
 export class Package extends Bundle {
     constructor(name, parentBundle) {
-        super(path.resolve('node_modules', name), path.resolve(parentBundle.out_dirname, 'dependencies', name),
+        super(path.resolve('node_modules', name),
+                path.resolve(parentBundle.out_dirname ? parentBundle.out_dirname : '', 'dependencies', name),
                 { useBabel: false, usePolyfills: false })
         this.name = name
     }

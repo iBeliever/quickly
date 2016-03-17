@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-var qmlify = require('../dist/index')
+var qmlify = require('../lib/index')
 
 var args = require('yargs')
     .usage('Usage: $0 [options] source')

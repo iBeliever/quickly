@@ -26,7 +26,7 @@ export class BaseFile {
     }
 
     relative(filename) {
-        return path.relative(this.out_dirname, filename)
+        return path.relative(this.out_dirname ? this.out_dirname : this.bundle.src_dirname, filename)
     }
 
     resolve(localFilename) {

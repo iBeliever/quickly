@@ -1,20 +1,30 @@
 {
   "name": "qmlify",
   "version": "0.0.1",
-  "description": "A script to qmlify ES6 code and the ES6 polyfills from Aurelia",
-  "main": "src/index.js",
-  "bin": {
-    "qmlify": "bin/qmlify.bin.js"
-  },
+  "description": "A script to transpile ES6 and Node.js code for use in QML",
+  "author": "Michael Spencer <sonrisesoftware@gmail.com>",
+  "license": "GPL-3.0",
+  "keywords": [
+    "qmlify",
+    "quickly",
+    "qml",
+    "es6"
+  ],
+  "homepage": "https://github.com/iBeliever/quickly",
+  "bugs": "https://github.com/iBeliever/quickly/issues",
+  "repository": "iBeliever/quickly",
+  "main": "lib/index.js",
+  "bin": "bin/qmlify.bin.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register",
     "test:watch": "npm run test -- --watch"
   },
-  "author": "Michael Spencer <sonrisesoftware@gmail.com>",
-  "license": "GPL",
   "dependencies": {
+    "babel-core": "^6.7.2",
+    "babel-polyfill": "^6.7.2",
     "es6-error": "^2.1.0",
-    "yargs": "^4.3.1"
+    "yargs": "^4.3.1",
+    "source-map-support": "^0.4.0"
   },
   "devDependencies": {
     "babel-eslint": "^5.0.0",
@@ -26,7 +36,6 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-sourcemaps": "^1.6.0",
-    "source-map-support": "^0.4.0",
     "mocha": "^2.2.5"
   }
 }
