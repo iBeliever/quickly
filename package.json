@@ -1,0 +1,28 @@
+{
+  "name": "quickly",
+  "version": "0.0.1",
+  "private": true,
+  "description": "ES6 and Node.js-like environment for QML",
+  "author": "Michael Spencer <sonrisesoftware@gmail.com>",
+  "license": "MPL-2.0",
+  "keywords": [
+    "qmlify",
+    "quickly",
+    "qml",
+    "es6"
+  ],
+  "homepage": "https://github.com/iBeliever/quickly",
+  "bugs": "https://github.com/iBeliever/quickly/issues",
+  "repository": "iBeliever/quickly",
+  "devDependencies": {
+    "babel-eslint": "^5.0.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-preset-es2015": "^6.6.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "eslint": "^2.4.0",
+    "eslint-plugin-class-property": "0.0.3",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-sourcemaps": "^1.6.0"
+  }
+}
