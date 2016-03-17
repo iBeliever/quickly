@@ -1,0 +1,6 @@
+
+<RCC>
+    <qresource prefix="/com/sonrisesoftware/quickly">
+        <file>qmldir</file>
+    </qresource>
+</RCC>

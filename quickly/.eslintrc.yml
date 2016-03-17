@@ -1,16 +1,12 @@
 env:
   es6: true
+  node: true
 extends: 'eslint:recommended'
 parser: babel-eslint
 parserOptions:
   sourceType: module
 globals:
-  console: false
   Qt: false
-  global: true
-  fetch: false
-  __filename: false
-  __dirname: false
 plugins:
   - class-property
 rules:

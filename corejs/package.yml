@@ -1,3 +1,0 @@
-exports:
-    localstorage: QtQuick.LocalStorage/LocalStorage 2.0
-    url: Quickly/Url 0.1

@@ -8,6 +8,7 @@ export class Package extends Bundle {
         super(path.resolve('node_modules', name),
                 path.resolve(parentBundle.out_dirname ? parentBundle.out_dirname : '', 'dependencies', name),
                 { useBabel: false, usePolyfills: false })
+        this.parentBundle = parentBundle
         this.name = name
     }
 
@@ -30,7 +31,7 @@ export class Package extends Bundle {
     }
 
     static locate(name, parentBundle) {
-        const module = new Package(name, parentBundle)
+        const module = new Package(name, parentBundle.parentBundle || parentBundle)
 
         if (!module.exists)
             return
