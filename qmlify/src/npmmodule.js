@@ -59,7 +59,9 @@ export function requireModule(importPath, context) {
     let filename = null
 
     if (importPath.includes('/')) {
-        [moduleName, filename] = importPath.split('/')
+        [moduleName, ...filename] = importPath.split('/')
+
+        filename = filename.join('/') + '.js'
     }
 
     if (moduleName.endsWith('.js'))
