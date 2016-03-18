@@ -49,7 +49,8 @@ export class JSFile extends BaseFile {
 
         this.transformRequires()
         this.transformExports()
-        this.findAndExportGlobals()
+        this.findGlobals()
+        this.exportGlobals()
         this.importGlobals()
 
         this.text = this.text.trim()
@@ -90,9 +91,11 @@ export class JSFile extends BaseFile {
         this.text = this.text.replace(templates.exportDefaultImport, 'var $1 = exports.$1 = $2.default;')
     }
 
-    findAndExportGlobals() {
+    findGlobals() {
         const regex = /global\.([\w\d_]+)/g
         let match = null
+
+        this.globals = []
 
         while ((match = regex.exec(this.text)) !== null) {
             const name = match[1]
@@ -100,7 +103,9 @@ export class JSFile extends BaseFile {
             if (!this.globals.includes(name))
                 this.globals.push(name)
         }
+    }
 
+    exportGlobals() {
         for (const name of this.globals) {
             this.footer += `var ${name} = global.${name};\n`
         }

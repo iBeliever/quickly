@@ -35,7 +35,6 @@ export function requireModule(importPath, context) {
                                 : []
 
     console.log(`Resolved '${importPath}' as QML import ${moduleName} ${version} [${dependency.globals}]`)
-    console.log(dependency.globals)
 
     return dependency
 }
