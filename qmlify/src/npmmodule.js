@@ -21,7 +21,7 @@ export class Package extends Bundle {
     }
 
     build(filename) {
-        const file = super.build(filename, { useBabel: filename.includes('src' )})
+        const file = super.build(filename, { useBabel: filename.includes('src' ) })
 
         patch(file, path.join(this.name, path.relative(this.src_dirname, filename)))
 

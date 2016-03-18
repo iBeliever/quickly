@@ -68,10 +68,23 @@ export class Bundle {
     }
 
     build(filename, options) {
-        if (!options)
-            options = {}
-        options.bundle = this
-        return build(filename, options)
+        for (const [regex, fileType] of fileTypes) {
+            if (filename.search(regex) !== -1) {
+                const file = new fileType(filename, this, options)
+                file.build()
+
+                filesCache[file.src_filename] = file
+
+                this.files[file.filename] = file
+
+                if (this.parentBundle)
+                    this.parentBundle.files[file.filename] = file
+
+                return file
+            }
+        }
+
+        throw new FileTypeError(`File type not recognized: ${filename}`)
     }
 
     save() {
@@ -122,34 +135,20 @@ export function build(filename, bundle_or_options) {
         return filesCache[filename]
     }
 
+    let bundle = null
     let options = {}
+    let out_filename = null
 
     if (bundle_or_options instanceof Bundle) {
-        options.bundle = bundle_or_options
+        bundle = bundle_or_options
     } else if (bundle_or_options) {
-        options = bundle_or_options
+        ({bundle, out_filename, ...options} = bundle_or_options)
+
+        if (!bundle)
+            bundle = new Bundle(null, null, options)
     }
 
-    if (!options.bundle)
-        options.bundle = localBundle
-
-    for (const [regex, fileType] of fileTypes) {
-        if (filename.search(regex) !== -1) {
-            const file = new fileType(filename, options)
-            file.build()
-
-            filesCache[file.src_filename] = file
-
-            file.bundle.files[file.filename] = file
-
-            if (file.bundle.parentBundle)
-                file.bundle.parentBundle.files[file.filename] = file
-
-            return file
-        }
-    }
-
-    throw new FileTypeError(`File type not recognized: ${filename}`)
+    return bundle.build(filename, { out_filename })
 }
 
 export class FileTypeError extends ExtendableError {}
@@ -157,5 +156,3 @@ export class FileTypeError extends ExtendableError {}
 export function registerFileType(regex, fileType) {
     fileTypes.push([regex, fileType])
 }
-
-export const localBundle = new Bundle()

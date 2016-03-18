@@ -25,6 +25,7 @@
   "dependencies": {
     "babel-core": "^6.7.2",
     "babel-polyfill": "^6.7.2",
+    "core-js": "^2.2.0",
     "diff": "^2.2.2",
     "es6-error": "^2.1.0",
     "shelljs": "^0.6.0",

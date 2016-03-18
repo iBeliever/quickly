@@ -5,10 +5,11 @@ import fs from 'fs'
 import {ImportError} from './dependencies'
 
 export class BaseFile {
-    constructor(filename, {bundle, out_filename, useBabel, usePolyfills} = {}) {
+    constructor(filename, bundle, {out_filename, useBabel, usePolyfills, ...options} = {}) {
         this.bundle = bundle
         this.useBabel = useBabel !== undefined ? useBabel : bundle.useBabel
         this.usePolyfills = usePolyfills !== undefined ? usePolyfills : bundle.usePolyfills
+        this.options = options
 
         this.filename = path.relative(bundle.src_dirname, filename)
 
