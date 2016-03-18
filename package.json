@@ -1,6 +1,5 @@
 {
   "name": "quickly",
-  "version": "0.0.1",
   "private": true,
   "description": "ES6 and Node.js-like environment for QML",
   "author": "Michael Spencer <sonrisesoftware@gmail.com>",
