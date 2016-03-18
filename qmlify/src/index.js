@@ -7,9 +7,14 @@ import './jsfile'
 import './qmlfile'
 import './qmlmodule'
 import './npmmodule'
+import {setImportPath} from './qmlmodule'
 
 export {build, registerFileType, Bundle} from './bundle'
 export {BaseFile} from './basefile'
+
+export function setQMLImportPath(path) {
+    setImportPath(path)
+}
 
 export function build_dir(src_dirname, out_dirname, options) {
     const bundle = new Bundle(src_dirname, out_dirname, options)

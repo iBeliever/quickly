@@ -4,6 +4,9 @@ import fs from 'fs'
 import glob from 'glob'
 import shell from 'shelljs'
 
+let modules = {}
+let moduleAliases = {}
+
 export function requireModule(importPath, context) {
     if (importPath.startsWith('./') || importPath.startsWith('../'))
         return
@@ -59,27 +62,31 @@ function parseImport(importPath) {
     return [moduleName, version, typeName]
 }
 
-requireHook(requireModule)
+export function setImportPath(modulesDirname) {
+    const moduleFilenames = glob.sync('**/quickly.json', {cwd: modulesDirname})
 
-const modulesDirname = shell.exec('qmake -query QT_INSTALL_QML', {silent:true}).stdout.trim()
-const moduleFilenames = glob.sync('**/quickly.json', {cwd: modulesDirname})
-const modules = {}
-const moduleAliases = {}
+    modules = {}
+    moduleAliases = {}
 
-for (const filename of moduleFilenames) {
-    const module = JSON.parse(fs.readFileSync(path.join(modulesDirname, filename), 'utf-8'))
+    for (const filename of moduleFilenames) {
+        const module = JSON.parse(fs.readFileSync(path.join(modulesDirname, filename), 'utf-8'))
 
-    modules[module.name] = module
+        modules[module.name] = module
 
-    for (const [alias, importPath] of Object.entries(module.exports)) {
-        const [moduleName, version, typeName] = parseImport(importPath)
+        for (const [alias, importPath] of Object.entries(module.exports)) {
+            const [moduleName, version, typeName] = parseImport(importPath)
 
-        moduleAliases[alias] = {
-            moduleName: moduleName,
-            version: version ? version
-                             : module.name == moduleName ? module.resources[typeName].latestVersion
-                                                         : null,
-            typeName: typeName
+            moduleAliases[alias] = {
+                moduleName: moduleName,
+                version: version ? version
+                                 : module.name == moduleName ? module.resources[typeName].latestVersion
+                                                             : null,
+                typeName: typeName
+            }
         }
     }
 }
+
+requireHook(requireModule)
+
+setImportPath(shell.exec('qmake -query QT_INSTALL_QML', {silent:true}).stdout.trim())

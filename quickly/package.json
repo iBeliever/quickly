@@ -4,7 +4,7 @@
   "scripts": {
     "build": "qmlify --no-polyfills -d build src",
     "test": "qmlify -d test/build test && qmltestrunner -input test/build",
-    "install-qml": "cp -r build/* src/qmldir `qmake -query QT_INSTALL_QML`/Quickly"
+    "install-qml": "mkdir -p `qmake -query QT_INSTALL_QML`/Quickly && cp -r build/* src/qmldir `qmake -query QT_INSTALL_QML`/Quickly"
   },
   "dependencies": {
     "aurelia-polyfills": "^1.0.0-beta.1.0.6",

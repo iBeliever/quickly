@@ -13,12 +13,17 @@ var args = require('yargs')
     .describe('babel', 'Run Babel on the source files')
     .default('polyfills', true)
     .describe('polyfills', 'Include the Quickly polyfills library')
+    .describe('import', 'QML import path')
     .help('h')
     .alias('h', 'help')
     .argv
 
 var source = args._[0]
 var options = { usePolyfills: args.polyfills, useBabel: args.babel }
+
+if (args.import) {
+    qmlify.setQMLImportPath(args.import)
+}
 
 if (args.outDir) {
     qmlify.build_dir(source, args.outDir, options)

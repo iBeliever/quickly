@@ -1,0 +1,30 @@
+sudo: required
+dist: trusty
+language: node_js
+node_js:
+  - "5.1"
+
+install:
+  - npm install -g gulp eslint
+  - npm install
+  - pushd qmlify
+  - npm install
+  - popd
+  - pushd quickly
+  - npm install
+  - popd
+  - sudo add-apt-repository -y ppa:beineri/opt-qt551-trusty
+  - sudo apt-get update
+  - sudo apt-get -y install qt55declarative
+  - sudo apt-get -y install qt55tools
+  - sudo apt-get -y install xvfb
+
+script:
+  - source /opt/qt55/bin/qt55-env.sh
+  - pushd qmlify
+  - gulp
+  - npm test
+  - npm link
+  - popd
+  - pushd quickly
+  - npm run build && mkdir -p qml_imports/Quickly && cp -r build/* src/qmldir qml_imports/Quickly && qmlify --import qml_imports -d test/build test && xvfb-run -a -s "-screen 0 800x600x24" qmltestrunner -input test/build -import qml_imports

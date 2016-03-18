@@ -2,7 +2,7 @@ var gulp = require('gulp')
 var sourcemaps = require('gulp-sourcemaps')
 var babel = require('gulp-babel')
 
-gulp.task('default', () => {
+gulp.task('default', function() {
     return gulp.src('qmlify/src/**/*.js')
         .pipe(sourcemaps.init())
         .pipe(babel())
