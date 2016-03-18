@@ -7,8 +7,8 @@ import './core/string'
 import './core/symbol'
 
 import './timeout'
-import './fetch'
 
-import Promise from './promise/promise'
+import 'whatwg-fetch'
+import {Promise} from 'es6-promise'
 
 global.Promise = Promise

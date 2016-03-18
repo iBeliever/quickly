@@ -2,20 +2,39 @@ import ExtendableError from 'es6-error'
 import fs from 'fs'
 import path from 'path'
 import assert from 'assert'
+import {isDir, getConfigFile} from './util'
+import * as qmldir from './qmldir'
 
 export let babelConfig = null
+export let qmlifyConfig = null
 const filesCache = {}
 const fileTypes = []
 
-if (fs.existsSync('.babelrc'))
-    babelConfig = JSON.parse(fs.readFileSync('.babelrc'))
+const babelFile = getConfigFile('.babelrc')
+
+if (babelFile)
+    babelConfig = JSON.parse(babelFile)
+
+const qmlifyFile = getConfigFile('quickly.json')
+
+if (babelFile)
+    qmlifyConfig = JSON.parse(qmlifyFile)
 
 export class Bundle {
+    files = {}
+
     constructor(src_dirname, out_dirname, { usePolyfills = true, useBabel = true } = {}) {
         this.src_dirname = src_dirname ? src_dirname : process.cwd()
         this.out_dirname = out_dirname
         this.usePolyfills = usePolyfills
         this.useBabel = useBabel
+
+        this.load()
+    }
+
+    load() {
+        this.qmldir = qmldir.load(this.src_dirname)
+        console.log(this.qmldir)
     }
 
     build_all() {
@@ -53,9 +72,35 @@ export class Bundle {
     }
 
     save() {
-        for (const file of Object.values(filesCache)) {
+        for (const file of Object.values(this.files)) {
             file.save()
         }
+
+        fs.writeFileSync(path.resolve(this.out_dirname, 'quickly.json'), JSON.stringify(this.bundleInfo, null, 2))
+    }
+
+    get bundleInfo() {
+        if (!this.qmldir)
+            return null
+
+        const bundleInfo = {
+            moduleName: this.qmldir.moduleName,
+            resources: {}
+        }
+
+        for (const [resourceName, resource] of Object.entries(this.qmldir.resources)) {
+            const file = this.files[resource.filename]
+
+            if (!file)
+                throw new Error(`Resource referenced by qmldir not found: ${filename}`)
+
+            bundleInfo.resources[resourceName] = {
+                latestVersion: resource.latestVersion,
+                globals: file.exportedGlobals
+            }
+        }
+
+        return bundleInfo
     }
 }
 
@@ -84,6 +129,11 @@ export function build(filename, bundle_or_options) {
 
             filesCache[file.src_filename] = file
 
+            file.bundle.files[file.filename] = file
+
+            if (file.bundle.parentBundle)
+                file.bundle.parentBundle.files[file.filename] = file
+
             return file
         }
     }
@@ -98,7 +148,3 @@ export function registerFileType(regex, fileType) {
 }
 
 export const localBundle = new Bundle()
-
-function isDir(filename) {
-    return fs.statSync(filename).isDirectory()
-}

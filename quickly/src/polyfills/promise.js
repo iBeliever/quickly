@@ -1,4 +1,4 @@
-export Promise from './promise/promise'
+export {Promise} from 'es6-promise'
 
 export const resolve = Promise.resolve
 export const reject = Promise.reject

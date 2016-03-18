@@ -1,7 +1,13 @@
 {
   "private": true,
   "license": "MPL-2.0",
+  "scripts": {
+    "build": "qmlify -d build src",
+    "test": "qmlify -d test/build test && qmltestrunner -input test/build",
+    "install-qml": "cp -r build/* src/qmldir `qmake -query QT_INSTALL_QML`/Quickly"
+  },
   "dependencies": {
+    "es6-promise": "^3.1.2",
     "url": "^0.11.0",
     "whatwg-fetch": "^0.11.0"
   }

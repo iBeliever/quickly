@@ -1,7 +1,8 @@
 import {build, Bundle} from './bundle'
 import './jsfile'
 import './qmlfile'
-import './npm'
+import './npmmodule'
+import './qmlmodule'
 import 'babel-polyfill'
 import 'source-map-support/register'
 
