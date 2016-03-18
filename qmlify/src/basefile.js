@@ -4,8 +4,6 @@ import path from 'path'
 import fs from 'fs'
 
 export class BaseFile {
-    dependencies = []
-
     constructor(filename, {bundle, out_filename, useBabel, usePolyfills} = {}) {
         this.bundle = bundle
         this.useBabel = useBabel !== undefined ? useBabel : bundle.useBabel

@@ -2,7 +2,7 @@
   "private": true,
   "license": "MPL-2.0",
   "scripts": {
-    "build": "qmlify -d build src",
+    "build": "qmlify --no-polyfills -d build src",
     "test": "qmlify -d test/build test && qmltestrunner -input test/build",
     "install-qml": "cp -r build/* src/qmldir `qmake -query QT_INSTALL_QML`/Quickly"
   },

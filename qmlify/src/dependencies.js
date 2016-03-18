@@ -55,13 +55,11 @@ export class Dependency {
             this.globals = file.exportedGlobals
     }
 
-    qualifier(importAs) {
-        let qualifier = null
-
+    importQualifier(importAs) {
         if (importAs) {
-            qualifier = importAs.startsWith('_') ? `QML${importAs}` : `QML_${importAs}`
+            return importAs.startsWith('_') ? `QML${importAs}` : `QML_${importAs}`
         } else {
-            qualifier = this.importPath.split(' ', 1)[0]
+            let qualifier = this.importPath.split(' ', 1)[0]
 
             if (qualifier.startsWith('./'))
                 qualifier = qualifier.slice(2)
@@ -71,20 +69,24 @@ export class Dependency {
 
             qualifier = qualifier.replace('/', '_').replace('.', '_').replace('-', '_')
 
-            qualifier = `QML_${qualifier}`
+            return `QML_${qualifier}`
         }
-
-        if (this.typeName)
-            return `${qualifier}.${this.typeName}`
-        else
-            return qualifier
     }
 
-    importStatement(qualifier) {
+    qualifier(importAs) {
+        if (this.typeName)
+            return `${this.importQualifier(importAs)}.${this.typeName}`
+        else
+            return this.importQualifier(importAs)
+    }
+
+    importStatement(importAs) {
+        const qualifier = this.importQualifier(importAs)
         return `.import ${this.id} as ${qualifier}`
     }
 
-    requireStatement(qualifier) {
+    requireStatement(importAs) {
+        const qualifier = this.qualifier(importAs)
         return `require(${qualifier})`
     }
 }

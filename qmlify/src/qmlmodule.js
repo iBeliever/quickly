@@ -12,7 +12,7 @@ export function requireModule(importPath, context) {
     let version = null
     let typeName = null
 
-    let bundle = context.bundle.parentBundle || context.bundle
+    const bundle = context.bundle.parentBundle || context.bundle
 
     if (bundle.config && bundle.config.exports[importPath])
         return null
@@ -20,21 +20,21 @@ export function requireModule(importPath, context) {
     if (importPath.includes(' ')) {
         [moduleName, version, typeName] = parseImport(importPath)
     } else if (moduleAliases[importPath]) {
-        [moduleName, version, typeName] = moduleAliases[importPath]
+        ({moduleName, version, typeName} = moduleAliases[importPath])
     } else {
         return null
     }
 
     const module = modules[moduleName]
 
-    const dependency = new Dependency(`${moduleName} ${version}`, importPath)
+    const dependency = new Dependency(`${moduleName} ${version}`, moduleName.toLowerCase())
 
     dependency.typeName = typeName
     dependency.globals = module ? typeName ? module.resources[typeName].globals
                                            : module.globals
                                 : []
 
-    console.log(`Resolved '${importPath}' as QML import ${moduleName} ${version}`)
+    console.log(`Resolved '${importPath}' as QML import ${moduleName} ${version} [${dependency.globals}]`)
     console.log(dependency.globals)
 
     return dependency

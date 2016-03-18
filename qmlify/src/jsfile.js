@@ -43,6 +43,10 @@ export class JSFile extends BaseFile {
 
         this.postHeader = this.postHeader.replace('FILENAME', this.basename)
 
+        if (this.usePolyfills) {
+            this.injectRequire('quickly-polyfills')
+        }
+
         this.transformRequires()
         this.findAndExportGlobals()
         this.importGlobals()
@@ -106,18 +110,24 @@ export class JSFile extends BaseFile {
         }
     }
 
+    injectRequire(importPath) {
+        const dependency = this.require(importPath)
+        const qualifier = dependency.qualifier()
+
+        this.header += dependency.importStatement() + '\n'
+        this.dependencies[qualifier] = dependency
+    }
+
     replaceRequire(match, $1, $2) {
         const [importPath, importAs] = $2 ? [$2, $1] : [$1, null]
 
         const dependency = this.require(importPath)
 
         const qualifier = dependency.qualifier(importAs)
-        const requireStatement = dependency.requireStatement(qualifier)
+        const requireStatement = dependency.requireStatement(importAs)
 
-        this.header += dependency.importStatement(qualifier) + '\n'
-
-        if (dependency)
-            this.dependencies[qualifier] = dependency
+        this.header += dependency.importStatement(importAs) + '\n'
+        this.dependencies[qualifier] = dependency
 
         if (importAs) {
             return `var ${importAs} = ${requireStatement};`
