@@ -14,13 +14,17 @@ export function requireModule(importPath, context) {
 
     const bundle = context.bundle.parentBundle || context.bundle
 
-    if (bundle.config && bundle.config.exports[importPath])
+    if (bundle.config.exports && bundle.config.exports[importPath])
         return null
 
     if (importPath.includes(' ')) {
         [moduleName, version, typeName] = parseImport(importPath)
     } else if (moduleAliases[importPath]) {
         ({moduleName, version, typeName} = moduleAliases[importPath])
+
+        if (bundle.config.dependencies && bundle.config.dependencies[importPath]) {
+            version = bundle.config.dependencies[importPath]
+        }
     } else {
         return null
     }

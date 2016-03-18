@@ -34,7 +34,7 @@ export class Bundle {
         if (fs.existsSync(quicklyFilename))
             this.config = JSON.parse(fs.readFileSync(quicklyFilename, 'utf-8'))
         else
-            this.config = null
+            this.config = {}
     }
 
     build_all() {
@@ -92,11 +92,9 @@ export class Bundle {
         const bundleInfo = {
             name: this.qmldir.moduleName,
             resources: {},
-            globals: {}
+            globals: {},
+            exports: this.config.exports
         }
-
-        if (this.config)
-            bundleInfo.exports = this.config.exports
 
         for (const [resourceName, resource] of Object.entries(this.qmldir.resources)) {
             const file = this.files[resource.filename]
