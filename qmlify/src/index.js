@@ -12,8 +12,8 @@ import {setImportPath} from './qmlmodule'
 export {build, registerFileType, Bundle} from './bundle'
 export {BaseFile} from './basefile'
 
-export function setQMLImportPath(path) {
-    setImportPath(path)
+export function addQMLImportPath(path) {
+    addImportPath(path)
 }
 
 export function build_dir(src_dirname, out_dirname, options) {

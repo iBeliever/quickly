@@ -4,8 +4,8 @@ import fs from 'fs'
 import glob from 'glob'
 import shell from 'shelljs'
 
-let modules = {}
-let moduleAliases = {}
+const modules = {}
+const moduleAliases = {}
 
 export function requireModule(importPath, context) {
     if (importPath.startsWith('./') || importPath.startsWith('../'))
@@ -62,11 +62,8 @@ function parseImport(importPath) {
     return [moduleName, version, typeName]
 }
 
-export function setImportPath(modulesDirname) {
+export function addImportPath(modulesDirname) {
     const moduleFilenames = glob.sync('**/quickly.json', {cwd: modulesDirname})
-
-    modules = {}
-    moduleAliases = {}
 
     for (const filename of moduleFilenames) {
         const module = JSON.parse(fs.readFileSync(path.join(modulesDirname, filename), 'utf-8'))
@@ -89,4 +86,4 @@ export function setImportPath(modulesDirname) {
 
 requireHook(requireModule)
 
-setImportPath(shell.exec('qmake -query QT_INSTALL_QML', {silent:true}).stdout.trim())
+addImportPath(shell.exec('qmake -query QT_INSTALL_QML', {silent:true}).stdout.trim())

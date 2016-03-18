@@ -22,7 +22,7 @@ var source = args._[0]
 var options = { usePolyfills: args.polyfills, useBabel: args.babel }
 
 if (args.import) {
-    qmlify.setQMLImportPath(args.import)
+    qmlify.addQMLImportPath(args.import)
 }
 
 if (args.outDir) {
