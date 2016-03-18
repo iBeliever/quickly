@@ -48,6 +48,7 @@ export class JSFile extends BaseFile {
         }
 
         this.transformRequires()
+        this.transformExports()
         this.findAndExportGlobals()
         this.importGlobals()
 
@@ -82,6 +83,11 @@ export class JSFile extends BaseFile {
 
         while (this.text.includes('\n\n\n'))
             this.text = this.text.replace('\n\n\n', '\n\n')
+    }
+
+    transformExports() {
+        this.text = this.text.replace(templates.exportImport, 'var $1 = exports.$1 = $2.$1;')
+        this.text = this.text.replace(templates.exportDefaultImport, 'var $1 = exports.$1 = $2.default;')
     }
 
     findAndExportGlobals() {

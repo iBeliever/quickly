@@ -15,3 +15,5 @@ function require(qualifier) {
 export const requireAs = /^var ([\w\d_]+) = require\(["']([^"']+)["']\);$/mg
 export const requireSideEffects = /^require\(["']([^"']+)["']\);$/mg
 export const require = /require\(["']([^"']+)["']\)/mg
+export const exportImport = /Object\.defineProperty\(exports, \'(.+)\', \{\n\s*enumerable: true,\n\s*get: function get\(\) \{\n\s*return (.*)\.\1;\n\s*\}\n\s*\}\);/mg
+export const exportDefaultImport = /^exports\.(.*) = (.*)\.default;$/mg
