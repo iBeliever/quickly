@@ -1,0 +1,9 @@
+#! /bin/bash
+
+QPM_DIR=../../quickly-qpm
+
+npm run build
+
+rm -r $QPM_DIR/*
+cp -r README.md LICENSE qpm.json quickly.pri src/qmldir build/* $QPM_DIR
+./qrc.py build > $QPM_DIR/quickly.qrc

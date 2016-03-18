@@ -16,11 +16,7 @@
   },
   "dependencies": [
   ],
-  "exports": {
-    "localstorage": "QtQuick.LocalStorage/LocalStorage 2.0",
-    "url": "Quickly/Url 0.1"
-  },
   "license": "MPL_2_0",
-  "pri_filename": "build/com_sonrisesoftware_quickly.pri",
+  "pri_filename": "quickly.pri",
   "webpage": "http://quickly.readthedocs.org"
 }
