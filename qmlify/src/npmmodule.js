@@ -1,5 +1,6 @@
 import {Bundle} from './bundle'
 import {requireHook, Dependency} from './dependencies'
+import {patch} from './patching'
 import fs from 'fs'
 import path from 'path'
 
@@ -14,6 +15,14 @@ export class Package extends Bundle {
 
     load() {
         this.config = JSON.parse(fs.readFileSync(path.join(this.src_dirname, 'package.json'), 'utf8'))
+    }
+
+    build(filename) {
+        const file = super.build(filename)
+
+        patch(file, path.join(this.name, path.relative(this.src_dirname, filename)))
+
+        return file
     }
 
     require(filename) {
