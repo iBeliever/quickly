@@ -1,14 +1,14 @@
-import './core/array'
-import './core/collections'
-import './core/number'
-import './core/object'
-import './core/reflect'
-import './core/string'
-import './core/symbol'
+import 'aurelia-polyfills/src/array'
+import 'aurelia-polyfills/src/collections'
+import 'aurelia-polyfills/src/number'
+import 'aurelia-polyfills/src/object'
+import 'aurelia-polyfills/src/reflect'
+import 'aurelia-polyfills/src/string'
+import 'aurelia-polyfills/src/symbol'
+import 'whatwg-fetch'
 
 import './timeout'
 
-import 'whatwg-fetch'
 import {Promise} from 'es6-promise'
 
 global.Promise = Promise

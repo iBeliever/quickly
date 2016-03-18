@@ -14,11 +14,14 @@ export class Package extends Bundle {
     }
 
     load() {
+        if (!this.exists)
+            return
+        super.load()
         this.config = JSON.parse(fs.readFileSync(path.join(this.src_dirname, 'package.json'), 'utf8'))
     }
 
     build(filename) {
-        const file = super.build(filename)
+        const file = super.build(filename, { useBabel: filename.includes('src' )})
 
         patch(file, path.join(this.name, path.relative(this.src_dirname, filename)))
 
@@ -44,8 +47,6 @@ export class Package extends Bundle {
 
         if (!module.exists)
             return
-
-        module.load()
 
         return module
     }

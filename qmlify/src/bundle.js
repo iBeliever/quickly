@@ -67,8 +67,11 @@ export class Bundle {
         }
     }
 
-    build(filename) {
-        return build(filename, this)
+    build(filename, options) {
+        if (!options)
+            options = {}
+        options.bundle = this
+        return build(filename, options)
     }
 
     save() {

@@ -2,6 +2,7 @@ import {registerFileType} from './bundle'
 import {require} from './dependencies'
 import path from 'path'
 import fs from 'fs'
+import {ImportError} from './dependencies'
 
 export class BaseFile {
     constructor(filename, {bundle, out_filename, useBabel, usePolyfills} = {}) {
@@ -32,7 +33,16 @@ export class BaseFile {
     }
 
     require(importPath) {
-        return require(importPath, this)
+        try {
+            return require(importPath, this)
+        } catch (error) {
+            if (error instanceof ImportError) {
+                error.message += ` (imported from ${this.filename})`
+                throw error
+            } else {
+                throw error
+            }
+        }
     }
 
     build() {

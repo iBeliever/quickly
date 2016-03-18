@@ -67,7 +67,7 @@ export class Dependency {
             while (qualifier.startsWith('../'))
                 qualifier = `_${qualifier.slice(3)}`
 
-            qualifier = qualifier.replace('/', '_').replace('.', '_').replace('-', '_')
+            qualifier = qualifier.replace(/\//g, '_').replace(/\./g, '_').replace(/-/g, '_')
 
             return `QML_${qualifier}`
         }
@@ -91,6 +91,6 @@ export class Dependency {
     }
 }
 
-class DependencyCycleError extends ExtendableError {}
+export class DependencyCycleError extends ExtendableError {}
 
-class ImportError extends ExtendableError {}
+export class ImportError extends ExtendableError {}

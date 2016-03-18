@@ -6,17 +6,24 @@ var path = require('path')
 var assert = require('assert')
 
 var args = require('yargs')
-    .usage('Usage: $0 filename original patched')
-    .demand(2)
+    .usage('Usage: $0 filename [original patched]')
+    .demand(1)
     .help('h')
     .alias('h', 'help')
     .argv
 
-
-
 var filename = args._[0]
-var orig_filename = args._[1]
-var patched_filename = args._[2]
+var orig_filename
+var patched_filename
+
+if (args._.length > 1) {
+    orig_filename = args._[1]
+    patched_filename = args._[2]
+} else {
+    var without_js = filename.split('.js', 1)[0]
+    orig_filename = 'build/dependencies/' + without_js + '-orig.js'
+    patched_filename = 'build/dependencies/' + without_js + '-patched.js'
+}
 
 var patchFilename = path.resolve(__dirname, '../patches', filename)
 
