@@ -1,7 +1,8 @@
-import {Bundle} from './bundle'
 import {requireHook, Dependency} from './dependencies'
-import fs from 'fs'
 import path from 'path'
+import fs from 'fs'
+import glob from 'glob'
+import shell from 'shelljs'
 
 export function requireModule(importPath, context) {
     if (importPath.startsWith('./') || importPath.startsWith('../'))
@@ -11,13 +12,71 @@ export function requireModule(importPath, context) {
     let version = null
     let typeName = null
 
-    if (importPath.includes(' ')) {
-        [moduleName, version] = importPath.split(' ', 1)
+    let bundle = context.bundle.parentBundle || context.bundle
 
-        if (moduleName.includes('/')) {
-            [moduleName, typeName] = moduleName.split('/', 1)[0]
-        }
+    if (bundle.config && bundle.config.exports[importPath])
+        return null
+
+    if (importPath.includes(' ')) {
+        [moduleName, version, typeName] = parseImport(importPath)
+    } else if (moduleAliases[importPath]) {
+        [moduleName, version, typeName] = moduleAliases[importPath]
+    } else {
+        return null
     }
+
+    const module = modules[moduleName]
+
+    const dependency = new Dependency(`${moduleName} ${version}`, importPath)
+
+    dependency.typeName = typeName
+    dependency.globals = module ? typeName ? module.resources[typeName].globals
+                                           : module.globals
+                                : []
+
+    console.log(`Resolved '${importPath}' as QML import ${moduleName} ${version}`)
+    console.log(dependency.globals)
+
+    return dependency
+}
+
+function parseImport(importPath) {
+    let moduleName = importPath
+    let version = null
+    let typeName = null
+
+    if (moduleName.includes(' ')) {
+        [moduleName, version] = importPath.split(' ')
+    }
+
+    if (moduleName.includes('/')) {
+        [moduleName, typeName] = moduleName.split('/')
+    }
+
+    return [moduleName, version, typeName]
 }
 
 requireHook(requireModule)
+
+const modulesDirname = shell.exec('qmake -query QT_INSTALL_QML', {silent:true}).stdout.trim()
+const moduleFilenames = glob.sync('**/quickly.json', {cwd: modulesDirname})
+const modules = {}
+const moduleAliases = {}
+
+for (const filename of moduleFilenames) {
+    const module = JSON.parse(fs.readFileSync(path.join(modulesDirname, filename), 'utf-8'))
+
+    modules[module.name] = module
+
+    for (const [alias, importPath] of Object.entries(module.exports)) {
+        const [moduleName, version, typeName] = parseImport(importPath)
+
+        moduleAliases[alias] = {
+            moduleName: moduleName,
+            version: version ? version
+                             : module.name == moduleName ? module.resources[typeName].latestVersion
+                                                         : null,
+            typeName: typeName
+        }
+    }
+}

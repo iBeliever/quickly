@@ -1,10 +1,12 @@
+import 'babel-polyfill'
+import 'core-js/stage/3'
+import 'source-map-support/register'
+
 import {build, Bundle} from './bundle'
 import './jsfile'
 import './qmlfile'
-import './npmmodule'
 import './qmlmodule'
-import 'babel-polyfill'
-import 'source-map-support/register'
+import './npmmodule'
 
 export {build, registerFileType, Bundle} from './bundle'
 export {BaseFile} from './basefile'

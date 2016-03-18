@@ -44,17 +44,24 @@ function requireLocalFile(importPath, context) {
 }
 
 export class Dependency {
+    globals = []
+
     constructor(id, importPath, file) {
         this.id = id
         this.importPath = importPath
         this.file = file
+
+        if (file)
+            this.globals = file.exportedGlobals
     }
 
     qualifier(importAs) {
+        let qualifier = null
+
         if (importAs) {
-            return importAs.startsWith('_') ? `QML${importAs}` : `QML_${importAs}`
+            qualifier = importAs.startsWith('_') ? `QML${importAs}` : `QML_${importAs}`
         } else {
-            let qualifier = this.importPath
+            qualifier = this.importPath.split(' ', 1)[0]
 
             if (qualifier.startsWith('./'))
                 qualifier = qualifier.slice(2)
@@ -64,8 +71,13 @@ export class Dependency {
 
             qualifier = qualifier.replace('/', '_').replace('.', '_').replace('-', '_')
 
-            return `QML_${qualifier}`
+            qualifier = `QML_${qualifier}`
         }
+
+        if (this.typeName)
+            return `${qualifier}.${this.typeName}`
+        else
+            return qualifier
     }
 
     importStatement(qualifier) {

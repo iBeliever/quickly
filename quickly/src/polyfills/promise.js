@@ -1,3 +1,5 @@
+import {Promise} from 'es6-promise'
+
 export {Promise} from 'es6-promise'
 
 export const resolve = Promise.resolve

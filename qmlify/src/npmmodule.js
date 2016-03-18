@@ -50,7 +50,7 @@ export function requireModule(importPath, context) {
     let filename = null
 
     if (importPath.includes('/')) {
-        [moduleName, filename] = importPath.split('/', 1)[0]
+        [moduleName, filename] = importPath.split('/')
     }
 
     if (moduleName.endsWith('.js'))
@@ -65,6 +65,8 @@ export function requireModule(importPath, context) {
         filename = module.main_filename
 
     const file = module.require(filename)
+
+    console.log(`Resolved "${importPath}" as npm module: ${context.relative(file.out_filename)}`)
 
     return new Dependency(`"${context.relative(file.out_filename)}"`, importPath, file)
 }

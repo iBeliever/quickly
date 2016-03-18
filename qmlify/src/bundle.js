@@ -6,7 +6,6 @@ import {isDir, getConfigFile} from './util'
 import * as qmldir from './qmldir'
 
 export let babelConfig = null
-export let qmlifyConfig = null
 const filesCache = {}
 const fileTypes = []
 
@@ -14,11 +13,6 @@ const babelFile = getConfigFile('.babelrc')
 
 if (babelFile)
     babelConfig = JSON.parse(babelFile)
-
-const qmlifyFile = getConfigFile('quickly.json')
-
-if (babelFile)
-    qmlifyConfig = JSON.parse(qmlifyFile)
 
 export class Bundle {
     files = {}
@@ -34,7 +28,13 @@ export class Bundle {
 
     load() {
         this.qmldir = qmldir.load(this.src_dirname)
-        console.log(this.qmldir)
+
+        const quicklyFilename = path.resolve(this.src_dirname, 'quickly.json')
+
+        if (fs.existsSync(quicklyFilename))
+            this.config = JSON.parse(fs.readFileSync(quicklyFilename, 'utf-8'))
+        else
+            this.config = null
     }
 
     build_all() {
@@ -76,7 +76,10 @@ export class Bundle {
             file.save()
         }
 
-        fs.writeFileSync(path.resolve(this.out_dirname, 'quickly.json'), JSON.stringify(this.bundleInfo, null, 2))
+        const bundleInfo = this.bundleInfo
+
+        if (bundleInfo)
+            fs.writeFileSync(path.resolve(this.out_dirname, 'quickly.json'), JSON.stringify(bundleInfo, null, 2))
     }
 
     get bundleInfo() {
@@ -84,20 +87,27 @@ export class Bundle {
             return null
 
         const bundleInfo = {
-            moduleName: this.qmldir.moduleName,
-            resources: {}
+            name: this.qmldir.moduleName,
+            resources: {},
+            globals: {}
         }
+
+        if (this.config)
+            bundleInfo.exports = this.config.exports
 
         for (const [resourceName, resource] of Object.entries(this.qmldir.resources)) {
             const file = this.files[resource.filename]
 
             if (!file)
-                throw new Error(`Resource referenced by qmldir not found: ${filename}`)
+                throw new Error(`Resource referenced by qmldir not found: ${resource.filename}`)
 
             bundleInfo.resources[resourceName] = {
                 latestVersion: resource.latestVersion,
                 globals: file.exportedGlobals
             }
+
+            for (const name of file.exportedGlobals)
+                bundleInfo.globals[name] = resourceName
         }
 
         return bundleInfo

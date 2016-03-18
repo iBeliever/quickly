@@ -15,8 +15,15 @@ export class JSFile extends BaseFile {
 
         for (const qualifier of Object.keys(this.dependencies)) {
             const dependency = this.dependencies[qualifier]
-            for (const name of dependency.exportedGlobals) {
-                globals[name] = qualifier
+
+            if (Array.isArray(dependency.globals)) {
+                for (const name of dependency.globals) {
+                    globals[name] = qualifier
+                }
+            } else {
+                for (const [name, typeName] of Object.entries(dependency.globals)) {
+                    globals[name] = `${qualifier}.${typeName}`
+                }
             }
         }
 
@@ -109,8 +116,8 @@ export class JSFile extends BaseFile {
 
         this.header += dependency.importStatement(qualifier) + '\n'
 
-        if (dependency.file)
-            this.dependencies[qualifier] = dependency.file
+        if (dependency)
+            this.dependencies[qualifier] = dependency
 
         if (importAs) {
             return `var ${importAs} = ${requireStatement};`
