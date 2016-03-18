@@ -1,0 +1,58 @@
+{
+  "name": "Quickly",
+  "resources": {
+    "Polyfills": {
+      "latestVersion": "0.1",
+      "globals": [
+        "Symbol",
+        "WeakMap",
+        "Map",
+        "Set",
+        "WeakSet",
+        "Reflect",
+        "fetch",
+        "Headers",
+        "Request",
+        "Response",
+        "setTimeout",
+        "Promise"
+      ]
+    },
+    "Promise": {
+      "latestVersion": "0.1",
+      "globals": []
+    },
+    "Http": {
+      "latestVersion": "0.1",
+      "globals": [
+        "fetch",
+        "Headers",
+        "Request",
+        "Response"
+      ]
+    },
+    "Url": {
+      "latestVersion": "0.1",
+      "globals": []
+    }
+  },
+  "globals": {
+    "Symbol": "Polyfills",
+    "WeakMap": "Polyfills",
+    "Map": "Polyfills",
+    "Set": "Polyfills",
+    "WeakSet": "Polyfills",
+    "Reflect": "Polyfills",
+    "fetch": "Http",
+    "Headers": "Http",
+    "Request": "Http",
+    "Response": "Http",
+    "setTimeout": "Polyfills",
+    "Promise": "Polyfills"
+  },
+  "exports": {
+    "localstorage": "QtQuick.LocalStorage/LocalStorage 2.0",
+    "quickly-polyfills": "Quickly/Polyfills",
+    "url": "Quickly/Url"
+  }
+}

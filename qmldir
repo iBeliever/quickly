@@ -1,0 +1,7 @@
+module Quickly
+
+Polyfills 0.1 polyfills/index.js
+Promise 0.1 polyfills/promise.js
+Http 0.1 polyfills/http.js
+
+Url 0.1 nodejs/url.js

@@ -1,0 +1,29 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+
+<qresource>
+	<file>dependencies/aurelia-polyfills/src/array.js</file>
+	<file>dependencies/aurelia-polyfills/src/collections.js</file>
+	<file>dependencies/aurelia-polyfills/src/number.js</file>
+	<file>dependencies/aurelia-polyfills/src/object.js</file>
+	<file>dependencies/aurelia-polyfills/src/reflect.js</file>
+	<file>dependencies/aurelia-polyfills/src/string.js</file>
+	<file>dependencies/aurelia-polyfills/src/symbol.js</file>
+	<file>dependencies/es6-promise/dist/es6-promise.js</file>
+	<file>dependencies/punycode/punycode.js</file>
+	<file>dependencies/querystring/decode.js</file>
+	<file>dependencies/querystring/encode.js</file>
+	<file>dependencies/querystring/index.js</file>
+	<file>dependencies/url/url.js</file>
+	<file>dependencies/url/util.js</file>
+	<file>dependencies/whatwg-fetch/fetch.js</file>
+	<file>nodejs/url.js</file>
+	<file>polyfills/Timeout.qml</file>
+	<file>polyfills/fetch.js</file>
+	<file>polyfills/http.js</file>
+	<file>polyfills/index.js</file>
+	<file>polyfills/promise.js</file>
+	<file>polyfills/timeout.js</file>
+</qresource>
+
+</RCC>

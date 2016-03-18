@@ -1,0 +1,22 @@
+{
+  "name": "com.sonrisesoftware.quickly",
+  "description": "Polyfills and core modules for emulating a Node.js environment in QML",
+  "author": {
+    "name": "Michael Spencer",
+    "email": "sonrisesoftware@gmail.com"
+  },
+  "repository": {
+    "type": "GITHUB",
+    "url": "git@github.com:iBeliever/quickly.git"
+  },
+  "version": {
+    "label": "0.0.1",
+    "revision": "",
+    "fingerprint": ""
+  },
+  "dependencies": [
+  ],
+  "license": "MPL_2_0",
+  "pri_filename": "quickly.pri",
+  "webpage": "http://quickly.readthedocs.org"
+}
