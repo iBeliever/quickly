@@ -1,3 +1,3 @@
 
 RESOURCES += \
-    $$PWD/quickly.qrc
+    $$PWD/resources.qrc

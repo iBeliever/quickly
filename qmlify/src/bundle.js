@@ -96,6 +96,11 @@ export class Bundle {
 
         if (bundleInfo)
             fs.writeFileSync(path.resolve(this.out_dirname, 'quickly.json'), JSON.stringify(bundleInfo, null, 2))
+
+        const resources = this.resources.map(resource => `\t<file>${resource}</file>`).join('\n')
+        const qrc = `<!DOCTYPE RCC>\n<RCC version="1.0">\n\n<qresource>\n${resources}\n</qresource>\n\n</RCC>\n`
+
+        fs.writeFileSync(path.resolve(this.out_dirname, 'resources.qrc'), qrc)
     }
 
     get bundleInfo() {
@@ -125,6 +130,10 @@ export class Bundle {
         }
 
         return bundleInfo
+    }
+
+    get resources() {
+        return Object.values(this.files).map(file => path.relative(this.out_dirname, file.out_filename)).sort()
     }
 }
 
