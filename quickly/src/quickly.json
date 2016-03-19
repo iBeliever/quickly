@@ -1,7 +1,7 @@
 {
-    "exports": {
-        "localstorage": "QtQuick.LocalStorage/LocalStorage 2.0",
-        "quickly-polyfills": "Quickly/Polyfills",
-        "url": "Quickly/Url"
-    }
+  "exports": {
+    "localstorage": "QtQuick.LocalStorage/LocalStorage 2.0",
+    "quickly-polyfills": "Quickly/Polyfills",
+    "url": "Quickly/Url"
+  }
 }

@@ -98,7 +98,8 @@ export class Bundle {
             fs.writeFileSync(path.resolve(this.out_dirname, 'quickly.json'), JSON.stringify(bundleInfo, null, 2))
 
         const resources = this.resources.map(resource => `\t<file>${resource}</file>`).join('\n')
-        const qrc = `<!DOCTYPE RCC>\n<RCC version="1.0">\n\n<qresource>\n${resources}\n</qresource>\n\n</RCC>\n`
+        const prefix = bundleInfo ? `/${bundleInfo.name}` : '/'
+        const qrc = `<!DOCTYPE RCC>\n<RCC version="1.0">\n\n<qresource prefix="${prefix}">\n${resources}\n</qresource>\n\n</RCC>\n`
 
         fs.writeFileSync(path.resolve(this.out_dirname, 'resources.qrc'), qrc)
     }
