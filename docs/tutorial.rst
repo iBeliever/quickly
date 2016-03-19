@@ -4,11 +4,9 @@ Tutorial
 Installing
 ----------
 
-First, make sure you have Python 3 installed. Download the `quickly git repo <https://github.com/iBeliever/quickly>`_, and run the following::
+If you don't have ``qmlify`` installed yet, install it using ``npm``::
 
-    $ make install
-
-That's it! You're all set!
+    $ npm install -g qmlify
 
 Setting up Babel
 ----------------

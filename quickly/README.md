@@ -7,6 +7,12 @@ The Quickly library is designed to be used with [QMLify](https://www.npmjs.com/p
 
 Check out the [documentation](http://quickly.readthedocs.org/en/latest/) for more details, usage, and API documentation.
 
+### Installation
+
+Install using qpm:
+
+    qpm install com.sonrisesoftware.quickly
+
 ### Usage
 
 Here are some sample uses:

@@ -1,11 +1,26 @@
 Quickly
 =======
 
+[![npm](https://img.shields.io/npm/v/qmlify.svg)](https://www.npmjs.com/package/qmlify)
+[![npm](https://img.shields.io/npm/dt/qmlify.svg)](https://www.npmjs.com/package/qmlify)
+[![GitHub issues](https://img.shields.io/github/issues/iBeliever/quickly.svg)](https://github.com/iBeliever/quickly/issues)
+[![Travis branch](https://img.shields.io/travis/iBeliever/quickly/master.svg)](https://travis-ci.org/iBeliever/quickly)
+
 Quickly is a build tool and QML module with provides an NodeJS-like ES6 environment for Javascript used in QML. The goal of the project is to allow you to write awesome modern ES6 Javascript taking advantage of classes, decorators, arrow functions, and best of all, many of the vast array of NPM packages available using the standard ES6 module imports. You can then take that code and use in directly from QML, just as you would with plain, old, QML-specific Javascript. You can even build a library using ES6 and NPM packages, and then distribute that as a standard QML module or QPM package for other developers to use in regular QML or QML-specific Javascript.
 
 For those who would prefer to stick with standard QML-specific Javascript, you can also do that and still use the Quickly library, which gives you promises, the fetch API, and many polyfills. This is great for longtime QML developers or existing projects that just want to drop in some easy-to-use features from modern JS core libraries.
 
 Check out the [documentation](http://quickly.readthedocs.org/en/latest/) for more details, usage, and API documentation.
+
+### Installation
+
+Why bother with documentation? Just install QMLify using npm:
+
+    npm install -g qmlify
+
+And install the Quickly core library using qpm (read the docs if you don't want to use qpm):
+
+    qpm install com.sonrisesoftware.quickly
 
 ### Examples
 
