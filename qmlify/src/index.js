@@ -7,7 +7,7 @@ import './jsfile'
 import './qmlfile'
 import './qmlmodule'
 import './npmmodule'
-import {setImportPath} from './qmlmodule'
+import {addImportPath} from './qmlmodule'
 
 export {build, registerFileType, Bundle} from './bundle'
 export {BaseFile} from './basefile'
