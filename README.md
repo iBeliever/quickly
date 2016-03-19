@@ -1,59 +1,55 @@
 Quickly
 =======
 
-Quickly is a build tool and QML module with provides an NodeJS-like ES6 environment for Javascript used in QML. The goal of the project is to allow you to write awesome modern ES6 Javascript taking advantage of classes, decorators, arrow functions, and best of all, many of the vast array of NPM packages available using the standard ES6 module imports. You can then take that code and use in directly from QML, just as you would with plain, old, QML-specific Javascript. You can even build a library using ES6 and NPM packages, and then distribute that as a standard QML module or QPM package for other developers to use in regular QML or QML-specific Javascript.
+Quickly is a QML/JS library offering additional classes and methods that are part of the ES6 JS spec that QML's JS framework does not have. In addition, it offers several of the core modules that Node.js has.
 
-For those who would prefer to stick with standard QML-specific Javascript, you can also do that and still use the Quickly library, which gives you promises, the fetch API, and many polyfills. This is great for longtime QML developers or existing projects that just want to drop in some easy-to-use features from modern JS core libraries.
+The Quickly library is designed to be used with [QMLify](https://www.npmjs.com/package/qmlify) to offer a Node.js-like ES6 environment for Javascript used in QML. However, in can be used by itself to add the additional classes, methods, and core modules to a QML project.
 
 Check out the [documentation](http://quickly.readthedocs.org/en/latest/) for more details, usage, and API documentation.
 
-### Examples
+### Installation
 
-Write modern ES6 like this:
+Install using qpm:
 
-    import * as url from 'url'  // Use core Node modules
+    qpm install com.sonrisesoftware.quickly
 
-    const data = url.parse('http://www.google.com')
+### Usage
 
-    // Use the Promise polyfill
+Here are some sample uses:
 
-    const promise = new Promise((resolve, reject) => {
-        resolve('Why again did we need a promise here?')
-    })
-
-    // Use the Array.prototype.includes() poylfill
-
-    const array = ['A', 'B', 'C']
-    console.log(array.includes('B'))
-
-    // Use ES6 classes
-
-    export class Document {
-        title = ''
-        body = ''
-
-        constructor(title, body) {
-            this.title = title
-            this.body = body
-        }
-    }
-
-And compile that into JS that QML understands:
-
-    import "file.js" as JS
+    import QtQuick 2.4
+    import Quickly 0.1
 
     Item {
         Component.onCompleted: {
-            var doc = new JS.Document('Hello, World', 'Contents')
+            var set = new Polyfills.Set()
+            set.add(4)
+            set.add(2)
+            set.add(4)
+            console.log(set.size) // Prints 2
+
+            var promise = new Promise.Promise(function(resolve, reject) {
+                resolve("Why again did we need a promise here?")
+            }).then(function(result) {
+                console.log(result)
+            })
+
+            Http.fetch('http://www.google.com')
+                .then(function(response) {
+                    return response.text()
+                }).then(function(text) {
+                    console.log(text)
+                })
+
+            var url = Url.parse('http://www.google.com')
         }
     }
 
+### Acknowledgements
+
+  * The `url` module is from https://github.com/defunctzombie/node-url
+  * The polyfills are from https://github.com/aurelia/polyfills, https://github.com/github/fetch, and https://github.com/stefanpenner/es6-promise
+
 ### Licensing
-
-**QMLify**
-
-QMLify is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
-
-**Quickly core modules**
 
 This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.

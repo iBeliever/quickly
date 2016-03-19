@@ -1,7 +1,8 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
 
-<qresource>
+<qresource prefix="/Quickly">
+	<file>dependencies/aurelia-pal/dist/commonjs/aurelia-pal.js</file>
 	<file>dependencies/aurelia-polyfills/src/array.js</file>
 	<file>dependencies/aurelia-polyfills/src/collections.js</file>
 	<file>dependencies/aurelia-polyfills/src/number.js</file>
@@ -19,7 +20,6 @@
 	<file>dependencies/whatwg-fetch/fetch.js</file>
 	<file>nodejs/url.js</file>
 	<file>polyfills/Timeout.qml</file>
-	<file>polyfills/fetch.js</file>
 	<file>polyfills/http.js</file>
 	<file>polyfills/index.js</file>
 	<file>polyfills/promise.js</file>
