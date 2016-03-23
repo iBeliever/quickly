@@ -209,23 +209,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }
 
   function sharedIterator(itp, array, array2) {
+    var _ref;
+
     var p = [0],
         done = false;
     itp.push(p);
-    return {
-      next: function next() {
-        var v,
-            k = p[0];
-        if (!done && k < array.length) {
-          v = array2 ? [array[k], array2[k]] : array[k];
-          p[0]++;
-        } else {
-          done = true;
-          itp.splice(itp.indexOf(p), 1);
-        }
-        return { done: done, value: v };
+    return _ref = {}, _defineProperty(_ref, Symbol.iterator, function () {
+      return this;
+    }), _defineProperty(_ref, 'next', function next() {
+      var v,
+          k = p[0];
+      if (!done && k < array.length) {
+        v = array2 ? [array[k], array2[k]] : array[k];
+        p[0]++;
+      } else {
+        done = true;
+        itp.splice(itp.indexOf(p), 1);
       }
-    };
+      return { done: done, value: v };
+    }), _ref;
   }
 
   function sharedSize() {

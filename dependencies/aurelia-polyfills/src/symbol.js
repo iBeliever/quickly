@@ -11,11 +11,7 @@ function require(qualifier) {
     return qualifier.module ? qualifier.module.exports : qualifier;
 }
 
-'use strict';
-
 (function (Object, GOPS) {
-  'use strict';
-
   // (C) Andrea Giammarchi - Mit Style
 
   if (GOPS in Object) return;
@@ -122,18 +118,16 @@ function require(qualifier) {
     return gOPN(o).filter(onlySymbols).map(sourceMap);
   };
 
-  descriptor.value = $defineProperty;
-  defineProperty(Object, DP, descriptor);
+  Object.defineProperty = $defineProperty;
 
   descriptor.value = $getOwnPropertySymbols;
   defineProperty(Object, GOPS, descriptor);
 
-  descriptor.value = function getOwnPropertyNames(o) {
+  Object.getOwnPropertyNames = function getOwnPropertyNames(o) {
     return gOPN(o).filter(onlyNonSymbols);
   };
-  defineProperty(Object, GOPN, descriptor);
 
-  descriptor.value = function defineProperties(o, descriptors) {
+  Object.defineProperties = function defineProperties(o, descriptors) {
     var symbols = $getOwnPropertySymbols(descriptors);
     if (symbols.length) {
       keys(descriptors).concat(symbols).forEach(function (uid) {
@@ -146,7 +140,6 @@ function require(qualifier) {
     }
     return o;
   };
-  defineProperty(Object, DPies, descriptor);
 
   descriptor.value = propertyIsEnumerable;
   defineProperty(ObjectProto, PIE, descriptor);
@@ -166,19 +159,17 @@ function require(qualifier) {
   };
   defineProperty(_Symbol, 'keyFor', descriptor);
 
-  descriptor.value = function getOwnPropertyDescriptor(o, key) {
+  Object.getOwnPropertyDescriptor = function getOwnPropertyDescriptor(o, key) {
     var descriptor = gOPD(o, key);
     if (descriptor && onlySymbols(key)) {
       descriptor.enumerable = propertyIsEnumerable.call(o, key);
     }
     return descriptor;
   };
-  defineProperty(Object, GOPD, descriptor);
 
-  descriptor.value = function (proto, descriptors) {
+  Object.create = function (proto, descriptors) {
     return arguments.length === 1 ? create(proto) : createWithSymbols(proto, descriptors);
   };
-  defineProperty(Object, 'create', descriptor);
 
   descriptor.value = function () {
     var str = toString.call(this);
@@ -227,13 +218,11 @@ var Symbol = global.Symbol;
       dP(Symbol, name, { value: Symbol(name) });
       switch (name) {
         case toStringTag:
-          descriptor = O.getOwnPropertyDescriptor(ObjectProto, 'toString');
-          descriptor.value = function () {
+          ObjectProto.toString = function () {
             var str = toString.call(this),
                 tst = typeof this === 'undefined' || this === null ? undefined : this[Symbol.toStringTag];
             return typeof tst === 'undefined' ? str : '[object ' + tst + ']';
           };
-          dP(ObjectProto, 'toString', descriptor);
           break;
       }
     }

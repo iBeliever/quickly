@@ -9,6 +9,7 @@
 .import "../dependencies/aurelia-polyfills/src/symbol.js" as QML_aurelia_polyfills_src_symbol
 .import "../dependencies/whatwg-fetch/fetch.js" as QML_whatwg_fetch
 .import "./timeout.js" as QML_timeout
+.import "./string.js" as QML_string
 
 var __filename = Qt.resolvedUrl('index.js').substring(7);
 var __dirname = __filename.substring(0, __filename.lastIndexOf('/'));

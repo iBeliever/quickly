@@ -23,6 +23,7 @@
 	<file>polyfills/http.js</file>
 	<file>polyfills/index.js</file>
 	<file>polyfills/promise.js</file>
+	<file>polyfills/string.js</file>
 	<file>polyfills/timeout.js</file>
 </qresource>
 
