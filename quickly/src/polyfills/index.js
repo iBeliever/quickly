@@ -8,6 +8,7 @@ import 'aurelia-polyfills/src/symbol'
 import 'whatwg-fetch'
 
 import './timeout'
+import './string'
 
 import {Promise} from 'es6-promise'
 
