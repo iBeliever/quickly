@@ -1,6 +1,6 @@
 {
   "name": "qmlify",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A build tool to transpile ES6 and Node.js code for use in QML",
   "author": "Michael Spencer <sonrisesoftware@gmail.com>",
   "license": "GPL-3.0",
