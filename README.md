@@ -1,4 +1,6 @@
-<img src="logo.png" style="height: 64px" align="right"/>
+<span>
+  <img src="logo.png" height="64px" align="right"/>
+</span>
 Quickly
 =======
 
