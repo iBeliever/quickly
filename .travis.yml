@@ -29,10 +29,19 @@ script:
   - npm link
   - popd
   - pushd quickly
-  - npm run build && mkdir -p qml_imports/Quickly && cp -r build/* src/qmldir qml_imports/Quickly && qmlify --import qml_imports -d test/build test
+
   - source /opt/qt55/bin/qt55-env.sh
+  - mkdir build; pushd build
+  - qmake .. && make && sudo make install
+  - popd
+  - qmlify -d test/build test
   - xvfb-run -a -s "-screen 0 800x600x24" qmltestrunner -input test/build -import qml_imports
+
   - source /opt/qt56/bin/qt56-env.sh
+  - rm -r build/*; pushd build
+  - qmake .. && make && sudo make install
+  - popd
+  - qmlify -d test/build test
   - xvfb-run -a -s "-screen 0 800x600x24" qmltestrunner -input test/build -import qml_imports
 
 notifications:

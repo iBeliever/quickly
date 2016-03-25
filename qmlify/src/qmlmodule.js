@@ -78,7 +78,7 @@ export function addImportPath(modulesDirname) {
             moduleAliases[alias] = {
                 moduleName: moduleName,
                 version: version ? version
-                                 : module.name == moduleName ? module.resources[typeName].latestVersion
+                                 : module.name == moduleName && typeName in module.resources ? module.resources[typeName].latestVersion
                                                              : null,
                 typeName: typeName
             }

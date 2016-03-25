@@ -51,26 +51,28 @@ export class Bundle {
     build_all() {
         this.build_dir(this.src_dirname)
 
-        for (const resource of Object.values(this.qmldir.resources)) {
-            let file = this.files[resource.filename]
+        if (this.qmldir) {
+            for (const resource of Object.values(this.qmldir.resources)) {
+                let file = this.files[resource.filename]
 
-            if (!file) {
-                if (resource.filename.startsWith('dependencies/')) {
-                    try {
-                        const filename = resource.filename.slice(13, -3)
-                        const dependency = require(filename, this)
+                if (!file) {
+                    if (resource.filename.startsWith('dependencies/')) {
+                        try {
+                            const filename = resource.filename.slice(13, -3)
+                            const dependency = require(filename, this)
 
-                        file = dependency.file
-                    } catch (error) {
-                        if (error instanceof ImportError) {
-                            error.message += ' (exported in the qmldir)'
-                            throw error
-                        } else {
-                            throw error
+                            file = dependency.file
+                        } catch (error) {
+                            if (error instanceof ImportError) {
+                                error.message += ' (exported in the qmldir)'
+                                throw error
+                            } else {
+                                throw error
+                            }
                         }
+                    } else {
+                        throw new ImportError(`Resource referenced by qmldir not found: ${resource.filename}`)
                     }
-                } else {
-                    throw new ImportError(`Resource referenced by qmldir not found: ${resource.filename}`)
                 }
             }
         }
