@@ -1,8 +1,5 @@
 env:
   mocha: true
-globals:
-  should: false
-  expect: false
 parserOptions:
   sourceType: module
 rules:

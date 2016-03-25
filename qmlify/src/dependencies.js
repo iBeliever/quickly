@@ -2,8 +2,9 @@ import ExtendableError from 'es6-error'
 import fs from 'fs'
 import path from 'path'
 import assert from 'assert'
+import {Bundle} from './bundle'
 
-const dependencyMap = {}
+// const dependencyMap = {}
 const requireHooks = [requireLocalFile]
 
 export function requireHook(hook) {
@@ -27,6 +28,9 @@ export function require(importPath, context) {
 
 function requireLocalFile(importPath, context) {
     if (!importPath.startsWith('./') && !importPath.startsWith('../'))
+        return
+
+    if (context instanceof Bundle)
         return
 
     if (importPath.endsWith('.js'))

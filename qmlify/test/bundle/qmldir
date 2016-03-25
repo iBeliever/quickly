@@ -1,0 +1,5 @@
+module TestModule
+
+Test 0.1 index.js
+SubResource 2.4 subdir/index.js
+Lodash 0.1 dependencies/lodash/index.js

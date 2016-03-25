@@ -1,4 +1,5 @@
 import {requireHook, Dependency} from './dependencies'
+import {Bundle} from './bundle'
 import path from 'path'
 import fs from 'fs'
 import glob from 'glob'
@@ -15,7 +16,8 @@ export function requireModule(importPath, context) {
     let version = null
     let typeName = null
 
-    const bundle = context.bundle.parentBundle || context.bundle
+    const bundle = (context instanceof Bundle) ? context
+                                               : context.bundle.parentBundle || context.bundle
 
     if (bundle.config.exports && bundle.config.exports[importPath])
         return null
@@ -41,7 +43,7 @@ export function requireModule(importPath, context) {
                                            : module.globals
                                 : []
 
-    console.log(`Resolved '${importPath}' as QML import ${moduleName} ${version} [${dependency.globals}]`)
+    // console.log(`Resolved '${importPath}' as QML import ${moduleName} ${version} [${dependency.globals}]`)
 
     return dependency
 }

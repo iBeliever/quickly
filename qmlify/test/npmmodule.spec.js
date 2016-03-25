@@ -31,7 +31,7 @@ describe('NPM Module', () => {
             expect(module.main_filename).to.equal('./url.js')
         })
 
-        context('building the main file', () => {
+        describe('building the main file', () => {
             const file = module.require()
 
             it('should not be null', () => {

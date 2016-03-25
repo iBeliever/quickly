@@ -92,7 +92,7 @@ export class JSFile extends BaseFile {
     }
 
     findGlobals() {
-        const regex = /global\.([\w\d_]+)/g
+        const regex = /global\.([\w\d_]+)\s+=/g
         let match = null
 
         this.globals = []

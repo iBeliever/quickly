@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import assert from 'assert'
 import {isDir, getConfigFile} from './util'
+import {ImportError, require} from './dependencies'
 import * as qmldir from './qmldir'
 
 export let babelConfig = null
@@ -39,8 +40,40 @@ export class Bundle {
             this.config = {}
     }
 
+    relative(filename) {
+        return path.relative(this.out_dirname, filename)
+    }
+
+    resolve(localFilename) {
+        return path.resolve(this.src_dirname, localFilename)
+    }
+
     build_all() {
         this.build_dir(this.src_dirname)
+
+        for (const resource of Object.values(this.qmldir.resources)) {
+            let file = this.files[resource.filename]
+
+            if (!file) {
+                if (resource.filename.startsWith('dependencies/')) {
+                    try {
+                        const filename = resource.filename.slice(13, -3)
+                        const dependency = require(filename, this)
+
+                        file = dependency.file
+                    } catch (error) {
+                        if (error instanceof ImportError) {
+                            error.message += ' (exported in the qmldir)'
+                            throw error
+                        } else {
+                            throw error
+                        }
+                    }
+                } else {
+                    throw new ImportError(`Resource referenced by qmldir not found: ${resource.filename}`)
+                }
+            }
+        }
     }
 
     build_dir(dirname) {
@@ -59,9 +92,7 @@ export class Bundle {
                 try {
                     this.build(filename)
                 } catch (error) {
-                    if (error instanceof FileTypeError) {
-                        console.warn(error.message)
-                    } else {
+                    if (!(error instanceof FileTypeError)) {
                         throw error
                     }
                 }
@@ -121,10 +152,9 @@ export class Bundle {
         for (const [resourceName, resource] of Object.entries(this.qmldir.resources)) {
             const file = this.files[resource.filename]
 
-            console.log(Object.keys(this.files))
-
             if (!file)
-                throw new Error(`Resource referenced by qmldir not found: ${resource.filename}`)
+                throw new ImportError(`Resource referenced by qmldir not found: ${resource.filename}`)
+
 
             bundleInfo.resources[resourceName] = {
                 latestVersion: resource.latestVersion,

@@ -76,14 +76,16 @@ export function requireModule(importPath, context) {
     if (moduleName.endsWith('.js'))
         throw new Error('Only npm packages are supported, not simple modules')
 
-    const module = Package.locate(moduleName, context.bundle)
+    const bundle = (context instanceof Bundle) ? context : context.bundle
+
+    const module = Package.locate(moduleName, bundle)
 
     if (!module)
         return
 
     const file = module.require(filename)
 
-    console.log(`Resolved "${importPath}" as npm module: ${context.relative(file.out_filename)}`)
+    // console.log(`Resolved "${importPath}" as npm module: ${context.relative(file.out_filename)}`)
 
     return new Dependency(`"${context.relative(file.out_filename)}"`, importPath, file)
 }
