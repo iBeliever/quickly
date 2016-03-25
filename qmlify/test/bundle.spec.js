@@ -10,11 +10,11 @@ describe('Bundle', function() {
     const src_dirname = base_dirname
     const out_dirname = path.resolve(base_dirname, 'build')
 
-    beforeEach('create the bundle', function() {
-        this.bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })
-    })
-
     describe('qmldir', function() {
+        before('create the bundle', function() {
+            this.bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })
+        })
+
         it('should not be null', function() {
             expect(this.bundle.qmldir).to.not.be.null
         })
@@ -43,13 +43,21 @@ describe('Bundle', function() {
 
     describe('bundleInfo', function() {
         context('without building everything', function() {
+            before('create the bundle', function() {
+                this.bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })
+            })
+
             it('should throw an error', function() {
                 expect(() => this.bundle.bundleInfo).to.throw(ImportError)
             })
         })
 
         context('after building everything', function() {
-            beforeEach('build everything', function() {
+            before('create the bundle', function() {
+                this.bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })
+            })
+
+            before('build everything', function() {
                 this.bundle.build_all()
             })
 
@@ -93,7 +101,11 @@ describe('Bundle', function() {
     })
 
     describe('build_all', function() {
-        beforeEach('build everything', function() {
+        before('create the bundle', function() {
+            this.bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })
+        })
+
+        before('build everything', function() {
             this.bundle.build_all()
         })
 
@@ -111,7 +123,11 @@ describe('Bundle', function() {
     })
 
     describe('building a simple file', function() {
-        beforeEach('build the file', function() {
+        before('create the bundle', function() {
+            this.bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })
+        })
+
+        before('build the file', function() {
             this.file = this.bundle.build('index.js')
         })
 
@@ -153,7 +169,11 @@ describe('Bundle', function() {
     })
 
     describe('building a file in a subdirectory', function() {
-        beforeEach('build the file', function() {
+        before('create the bundle', function() {
+            this.bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })
+        })
+
+        before('build the file', function() {
             this.file = this.bundle.build(path.join('subdir', 'index.js'))
         })
 
