@@ -1,20 +1,26 @@
 import {Bundle} from './bundle'
 import {requireHook, Dependency} from './dependencies'
 import {patch} from './patching'
+import {findFile} from './util'
 import fs from 'fs'
 import path from 'path'
 
 export class Package extends Bundle {
     constructor(name, parentBundle) {
-        super(path.resolve('node_modules', name),
-                path.resolve(parentBundle.out_dirname ? parentBundle.out_dirname : '', 'dependencies', name),
-                { useBabel: false, usePolyfills: false })
-        this.parentBundle = parentBundle
-        this.name = name
+        super(null, path.resolve(parentBundle.out_dirname ? parentBundle.out_dirname : '',
+                                 'dependencies', name),
+              { name: name, parentBundle: parentBundle, useBabel: false, usePolyfills: false })
+    }
+
+    locate() {
+        this.src_dirname = findFile(path.join('node_modules', this.name),
+                                    this.parentBundle.src_dirname)
+
+        return this.exists
     }
 
     load() {
-        if (!this.exists)
+        if (!this.locate())
             return
         super.load()
         this.config = JSON.parse(fs.readFileSync(path.join(this.src_dirname, 'package.json'), 'utf8'))
@@ -29,6 +35,8 @@ export class Package extends Bundle {
     }
 
     require(filename) {
+        if (!filename)
+            filename = this.main_filename
         return this.build(path.resolve(this.src_dirname, filename))
     }
 
@@ -39,7 +47,7 @@ export class Package extends Bundle {
     }
 
     get exists() {
-        return fs.existsSync(this.src_dirname)
+        return !!this.src_dirname
     }
 
     static locate(name, parentBundle) {
@@ -72,9 +80,6 @@ export function requireModule(importPath, context) {
 
     if (!module)
         return
-
-    if (!filename)
-        filename = module.main_filename
 
     const file = module.require(filename)
 

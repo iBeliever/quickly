@@ -11,18 +11,25 @@ export class BaseFile {
         this.usePolyfills = usePolyfills !== undefined ? usePolyfills : bundle.usePolyfills
         this.options = options
 
-        this.filename = path.relative(bundle.src_dirname, filename)
-
-        this.basename = path.basename(this.filename)
-        this.local_dirname = path.dirname(this.filename)
-
         this.src_filename = path.resolve('', filename)
         this.src_dirname = path.dirname(this.src_filename)
 
+        const rel_filename = path.relative(bundle.src_dirname, filename)
+
         this.out_filename = out_filename ? out_filename
-                                         : bundle.out_dirname ? path.resolve(bundle.out_dirname, this.filename)
+                                         : bundle.out_dirname ? path.resolve(bundle.out_dirname, rel_filename)
                                                               : null
         this.out_dirname = this.out_filename ? path.dirname(this.out_filename) : null
+
+        if (this.out_filename) {
+            this.filename = path.relative((bundle.parentBundle || bundle).out_dirname,
+                                        this.out_filename)
+        } else {
+            this.filename = rel_filename
+        }
+
+        this.basename = path.basename(this.filename)
+        this.local_dirname = path.dirname(this.filename)
     }
 
     relative(filename) {

@@ -17,7 +17,9 @@ if (babelFile)
 export class Bundle {
     files = {}
 
-    constructor(src_dirname, out_dirname, { usePolyfills = true, useBabel = true } = {}) {
+    constructor(src_dirname, out_dirname, { name, parentBundle, usePolyfills = true, useBabel = true } = {}) {
+        this.name = name
+        this.parentBundle = parentBundle
         this.src_dirname = src_dirname ? src_dirname : process.cwd()
         this.out_dirname = out_dirname
         this.usePolyfills = usePolyfills
@@ -70,7 +72,8 @@ export class Bundle {
     build(filename, options) {
         for (const [regex, fileType] of fileTypes) {
             if (filename.search(regex) !== -1) {
-                const file = new fileType(filename, this, options)
+                const file = new fileType(path.resolve(this.src_dirname, filename), this,
+                                          options)
                 file.build()
 
                 filesCache[file.src_filename] = file
@@ -117,6 +120,8 @@ export class Bundle {
 
         for (const [resourceName, resource] of Object.entries(this.qmldir.resources)) {
             const file = this.files[resource.filename]
+
+            console.log(Object.keys(this.files))
 
             if (!file)
                 throw new Error(`Resource referenced by qmldir not found: ${resource.filename}`)

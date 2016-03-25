@@ -1,14 +1,15 @@
+import {expect} from 'chai'
+
 import path from 'path'
 import fs from 'fs'
-import assert from 'assert'
 import {build} from '../src'
 
 function trim(str) {
     return str.replace(/^\s+|\s+$/, '')
 }
 
-describe('', () => {
-    const fixturesDir = path.join(__dirname, 'fixtures')
+describe('Fixtures', () => {
+    const fixturesDir = path.resolve(__dirname, 'fixtures')
 
     fs.readdirSync(fixturesDir).map((caseName) => {
         it(`should ${caseName.split('-').join(' ')}`, () => {
@@ -20,7 +21,7 @@ describe('', () => {
                 path.join(fixtureDir, 'expected.js')
             ).toString()
 
-            assert.equal(trim(actual), trim(expected))
+            expect(trim(actual)).to.equal(trim(expected))
         })
     })
 })

@@ -9,11 +9,24 @@ export function getConfigFile(filename, dirname) {
     if (!dirname)
         dirname = process.cwd()
 
+    const p = findFile(filename, dirname)
+
+    if (p)
+        return fs.readFileSync(p)
+    else
+        return null
+}
+
+export function findFile(filename, dirname) {
+    if (!dirname)
+        dirname = process.cwd()
+
+
     if (fs.existsSync(path.join(dirname, filename)))
-        return fs.readFileSync(path.join(dirname, filename))
+        return path.join(dirname, filename)
 
     if (dirname !== '/')
-        return getConfigFile(filename, path.resolve(dirname, '..'))
+        return findFile(filename, path.resolve(dirname, '..'))
     else
         return null
 }
