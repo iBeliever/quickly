@@ -10,7 +10,7 @@ const moduleAliases = {}
 
 export function requireModule(importPath, context) {
     if (importPath.startsWith('./') || importPath.startsWith('../'))
-        return
+        return null
 
     let moduleName = null
     let version = null
@@ -78,7 +78,7 @@ export function addImportPath(modulesDirname) {
             moduleAliases[alias] = {
                 moduleName: moduleName,
                 version: version ? version
-                                 : module.name == moduleName && typeName in module.resources ? module.resources[typeName].latestVersion
+                                 : module.name === moduleName && typeName in module.resources ? module.resources[typeName].latestVersion
                                                              : null,
                 typeName: typeName
             }

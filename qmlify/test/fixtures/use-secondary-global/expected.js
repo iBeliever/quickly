@@ -16,4 +16,4 @@ var PI = global.PI = QML_local.global.PI;
 
 'use strict';
 
-console.log(PI);
+console.log(PI); /* global PI */

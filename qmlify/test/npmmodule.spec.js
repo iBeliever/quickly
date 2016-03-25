@@ -15,6 +15,7 @@ describe('NPM Module', () => {
         const module = new Package('url', bundle)
 
         it('should find the module', () => {
+            // eslint-disable-next-line
             expect(module.exists).to.be.true
         })
 
@@ -35,6 +36,7 @@ describe('NPM Module', () => {
             const file = module.require()
 
             it('should not be null', () => {
+                // eslint-disable-next-line
                 expect(file).to.not.be.null
             })
 
@@ -65,6 +67,7 @@ describe('NPM Module', () => {
         const module = new Package('sfdsdf', bundle)
 
         it('should not find the module', () => {
+            // eslint-disable-next-line
             expect(module.exists).to.be.false
         })
     })

@@ -4,6 +4,7 @@ import path from 'path'
 import assert from 'assert'
 import {isDir, getConfigFile} from './util'
 import {ImportError, require} from './dependencies'
+import {NOT_FOUND, JSON_INDENT_LEVEL} from './util'
 import * as qmldir from './qmldir'
 
 export let babelConfig = null
@@ -56,9 +57,10 @@ export class Bundle {
                 let file = this.files[resource.filename]
 
                 if (!file) {
-                    if (resource.filename.startsWith('dependencies/')) {
+                    const match = resource.filename.match(/dependencies\/(.*)\.js/)
+                    if (match) {
                         try {
-                            const filename = resource.filename.slice(13, -3)
+                            const filename = match[1]
                             const dependency = require(filename, this)
 
                             file = dependency.file
@@ -86,7 +88,7 @@ export class Bundle {
         for (const file of files) {
             const filename = path.resolve(dirname, file)
 
-            if (filename == path.resolve('', this.out_dirname) || filename.endsWith('node_modules')) {
+            if (filename === path.resolve('', this.out_dirname) || filename.endsWith('node_modules')) {
                 continue
             } else if (isDir(filename)) {
                 this.build_dir(filename)
@@ -104,7 +106,7 @@ export class Bundle {
 
     build(filename, options) {
         for (const [regex, fileType] of fileTypes) {
-            if (filename.search(regex) !== -1) {
+            if (filename.search(regex) !== NOT_FOUND) {
                 const file = new fileType(path.resolve(this.src_dirname, filename), this,
                                           options)
                 file.build()
@@ -131,7 +133,8 @@ export class Bundle {
         const bundleInfo = this.bundleInfo
 
         if (bundleInfo)
-            fs.writeFileSync(path.resolve(this.out_dirname, 'quickly.json'), JSON.stringify(bundleInfo, null, 2))
+            fs.writeFileSync(path.resolve(this.out_dirname, 'quickly.json'),
+                             JSON.stringify(bundleInfo, null, JSON_INDENT_LEVEL))
 
         const resources = this.resources.map(resource => `\t<file>${resource}</file>`).join('\n')
         const prefix = bundleInfo ? `/${bundleInfo.name}` : '/'

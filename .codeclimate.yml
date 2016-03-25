@@ -1,0 +1,22 @@
+---
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+        - javascript
+        - python
+    exclude_paths:
+      - qmlify/test
+      - quickly/test
+  eslint:
+    enabled: true
+  fixme:
+    enabled: true
+  radon:
+    enabled: true
+ratings:
+  paths:
+  - "**.js"
+  - "**.py"
+exclude_paths: []

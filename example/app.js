@@ -1,5 +1,7 @@
 import _ from 'lodash'
 
+const CHUNK_SIZE = 3
+
 export class Person {
     constructor(name) {
         this.name = name
@@ -11,5 +13,5 @@ export class Person {
 }
 
 export function chunky(array) {
-    return _.chunk(array, 3)
+    return _.chunk(array, CHUNK_SIZE)
 }

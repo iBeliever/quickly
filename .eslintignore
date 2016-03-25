@@ -1,3 +1,9 @@
 qmlify/lib
 qmlify/bin
+qmlify/patches
+quickly/test
+build
 gulpfile.js
+expected.js
+node_modules
+*es5*

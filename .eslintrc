@@ -1,0 +1,66 @@
+env:
+  es6: true
+  node: true
+extends: 'eslint:recommended'
+parser: babel-eslint
+parserOptions:
+  sourceType: module
+plugins:
+  - class-property
+rules:
+  # Style
+  indent: [2, 4]
+  linebreak-style: [2, unix]
+  quotes: [2, single]
+  semi: [2, never]
+  arrow-spacing: [2, {before: true, after: true}]
+
+  # Possible Errors
+  no-confusing-arrow: 2
+  no-var: 2
+  no-console: 0
+  object-shorthand: [2, methods]
+  prefer-const: 1
+  prefer-arrow-callback: 2
+  prefer-template: 1
+  valid-jsdoc: 2
+
+  # Correctness
+  accessor-pairs: 2
+  array-callback-return: 1
+  block-scoped-var: 2
+  complexity: 1
+  consistent-return: 2
+  default-case: 2
+  dot-location: [2, property]
+  eqeqeq: [2, allow-null]
+  guard-for-in: 2
+  no-caller: 2
+  no-div-regex: 2
+  no-empty-function: 2
+  no-extra-bind: 2
+  no-extra-label: 2
+  no-floating-decimal: 2
+  no-implicit-coercion: [2, {allow: ["!!"]}]
+  no-iterator: 2
+  no-loop-func: 2
+  no-lone-blocks: 2
+  no-magic-numbers: [2, {ignoreArrayIndexes: true}]
+  no-multi-spaces: 2
+  no-multi-str: 2
+  no-native-reassign: 2
+  no-new: 2
+  no-new-func: 2
+  no-new-wrappers: 2
+  no-octal-escape: 2
+  no-proto: 2
+  no-return-assign: 2
+  no-self-compare: 2
+  no-sequences: 2
+  no-throw-literal: 2
+  no-unmodified-loop-condition: 2
+  no-unused-expressions: 2
+  no-useless-call: 2
+  no-useless-concat: 2
+  no-void: 2
+  no-with: 2

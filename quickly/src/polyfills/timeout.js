@@ -10,10 +10,12 @@
 
 const timerComponent = Qt.createComponent(Qt.resolvedUrl('Timeout.qml'))
 
+const TIMEOUT_IMMEDIATELY = 0
+
 export function setTimeout(callback, timeout) {
     const timer = timerComponent.createObject()
 
-    timer.interval = timeout || 0
+    timer.interval = timeout || TIMEOUT_IMMEDIATELY
 
     timer.triggered.connect(() => {
         timer.destroy()

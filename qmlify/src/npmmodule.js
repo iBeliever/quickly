@@ -54,7 +54,7 @@ export class Package extends Bundle {
         const module = new Package(name, parentBundle.parentBundle || parentBundle)
 
         if (!module.exists)
-            return
+            return null
 
         return module
     }
@@ -62,7 +62,7 @@ export class Package extends Bundle {
 
 export function requireModule(importPath, context) {
     if (importPath.startsWith('./') || importPath.startsWith('../'))
-        return
+        return null
 
     let moduleName = importPath
     let filename = null
@@ -81,7 +81,7 @@ export function requireModule(importPath, context) {
     const module = Package.locate(moduleName, bundle)
 
     if (!module)
-        return
+        return null
 
     const file = module.require(filename)
 

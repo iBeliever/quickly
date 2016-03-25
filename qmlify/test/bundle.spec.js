@@ -16,6 +16,7 @@ describe('Bundle', function() {
         })
 
         it('should not be null', function() {
+            // eslint-disable-next-line
             expect(this.bundle.qmldir).to.not.be.null
         })
 
@@ -132,6 +133,7 @@ describe('Bundle', function() {
         })
 
         it('should not be null', function() {
+            // eslint-disable-next-line
             expect(this.file).to.not.be.null
         })
 
@@ -160,6 +162,7 @@ describe('Bundle', function() {
         })
 
         it('should have no dependencies', function() {
+            // eslint-disable-next-line
             expect(this.file.dependencies).to.be.empty
         })
 
@@ -178,6 +181,7 @@ describe('Bundle', function() {
         })
 
         it('should not be null', function() {
+            // eslint-disable-next-line
             expect(this.file).to.not.be.null
         })
 

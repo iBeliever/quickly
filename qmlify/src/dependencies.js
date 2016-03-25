@@ -7,6 +7,9 @@ import {Bundle} from './bundle'
 // const dependencyMap = {}
 const requireHooks = [requireLocalFile]
 
+const LOCAL_PREFIX = './'
+const PARENT_PREFIX = '../'
+
 export function requireHook(hook) {
     requireHooks.push(hook)
 }
@@ -28,10 +31,10 @@ export function require(importPath, context) {
 
 function requireLocalFile(importPath, context) {
     if (!importPath.startsWith('./') && !importPath.startsWith('../'))
-        return
+        return null
 
     if (context instanceof Bundle)
-        return
+        return null
 
     if (importPath.endsWith('.js'))
         throw new ImportError(`Don't include the '.js' extension when importing local files: ${importPath}`)
@@ -63,13 +66,14 @@ export class Dependency {
         if (importAs) {
             return importAs.startsWith('_') ? `QML${importAs}` : `QML_${importAs}`
         } else {
+            // eslint-disable-next-line
             let qualifier = this.importPath.split(' ', 1)[0]
 
-            if (qualifier.startsWith('./'))
-                qualifier = qualifier.slice(2)
+            if (qualifier.startsWith(LOCAL_PREFIX))
+                qualifier = qualifier.slice(LOCAL_PREFIX.length)
 
-            while (qualifier.startsWith('../'))
-                qualifier = `_${qualifier.slice(3)}`
+            while (qualifier.startsWith(PARENT_PREFIX))
+                qualifier = `_${qualifier.slice(PARENT_PREFIX.length)}`
 
             qualifier = qualifier.replace(/\//g, '_').replace(/\./g, '_').replace(/-/g, '_')
 

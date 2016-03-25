@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 /*
  * Quickly - ES6 and Node.js-like environment for QML
  *
