@@ -8,8 +8,4 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import QtQuick 2.4
-
-Timer {
-    id: timer
-}
+#include "process.h"

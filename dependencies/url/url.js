@@ -745,3 +745,9 @@ Url.prototype.parseHost = function() {
   }
   if (host) this.hostname = host;
 };
+
+var parse = exports.parse;
+var resolve = exports.resolve;
+var resolveObject = exports.resolveObject;
+var format = exports.format;
+var Url = exports.Url;

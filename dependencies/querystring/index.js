@@ -17,3 +17,8 @@ function require(qualifier) {
 
 exports.decode = exports.parse = require(QML_decode);
 exports.encode = exports.stringify = require(QML_encode);
+
+var decode = exports.decode;
+var parse = exports.parse;
+var encode = exports.encode;
+var stringify = exports.stringify;

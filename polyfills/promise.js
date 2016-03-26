@@ -26,3 +26,9 @@ var resolve = exports.resolve = _es6Promise.Promise.resolve;
 var reject = exports.reject = _es6Promise.Promise.reject;
 var all = exports.all = _es6Promise.Promise.all;
 var race = exports.race = _es6Promise.Promise.race;
+
+var race = exports.race;
+var all = exports.all;
+var reject = exports.reject;
+var resolve = exports.resolve;
+var Promise = exports.Promise;

@@ -73,3 +73,9 @@ function initializePAL(callback) {
 
   callback(PLATFORM, FEATURE, DOM);
 }
+
+var AggregateError = exports.AggregateError;
+var initializePAL = exports.initializePAL;
+var FEATURE = exports.FEATURE;
+var PLATFORM = exports.PLATFORM;
+var DOM = exports.DOM;

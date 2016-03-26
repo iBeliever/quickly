@@ -12,9 +12,9 @@ function require(qualifier) {
     return qualifier.module ? qualifier.module.exports : qualifier;
 }
 
-var fetch = global.fetch = QML_whatwg_fetch.global.fetch;
 var Headers = global.Headers = QML_whatwg_fetch.global.Headers;
 var Request = global.Request = QML_whatwg_fetch.global.Request;
 var Response = global.Response = QML_whatwg_fetch.global.Response;
+var fetch = global.fetch = QML_whatwg_fetch.global.fetch;
 
 'use strict';

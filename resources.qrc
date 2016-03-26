@@ -18,7 +18,6 @@
 	<file>dependencies/url/url.js</file>
 	<file>dependencies/url/util.js</file>
 	<file>dependencies/whatwg-fetch/fetch.js</file>
-	<file>nodejs/url.js</file>
 	<file>polyfills/Timeout.qml</file>
 	<file>polyfills/http.js</file>
 	<file>polyfills/index.js</file>

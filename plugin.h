@@ -8,8 +8,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import QtQuick 2.4
+#ifndef PLUGIN_H
+#define PLUGIN_H
 
-Timer {
-    id: timer
-}
+#include <QQmlExtensionPlugin>
+
+class Plugin : public QQmlExtensionPlugin
+{
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "com.sonrisesoftware.Quickly")
+
+public:
+    void registerTypes(const char *uri);
+};
+
+#endif // PLUGIN_H

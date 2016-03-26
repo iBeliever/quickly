@@ -8,8 +8,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import QtQuick 2.4
+#include "basemodule.h"
 
-Timer {
-    id: timer
+#include <QFile>
+#include <QTextStream>
+#include <private/qv8engine_p.h>
+
+void BaseModule::throwError(const QString &message) const
+{
+    QV8Engine::getV4(m_engine)->throwError(message);
 }
