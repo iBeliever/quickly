@@ -43,10 +43,10 @@ QString Path::dirname(const QString &path) const
 
 QString Path::extname(const QString &path) const
 {
-    if (path.indexOf(".") == 0) {
+    if (path.startsWith(".") || !path.contains(".")) {
         return "";
     } else {
-        return QFileInfo(path).suffix();
+        return "." + QFileInfo(path).suffix();
     }
 }
 

@@ -21,7 +21,17 @@ TestCase {
         compare(Paths.dirname('/foo/bar/baz/asdf/quux'), '/foo/bar/baz/asdf')
     }
 
-    function test_extname() {
-        compare(Paths.extname('/foo/bar/baz/asdf/quux'), '/foo/bar/baz/asdf')
+    function test_extname_data() {
+        return [
+            { actual: 'index.html', expected: '.html' },
+            { actual: 'index.coffee.md', expected: '.md' },
+            { actual: 'index.', expected: '.' },
+            { actual: 'index', expected: '' },
+            { actual: '.index', expected: '' }
+        ]
+    }
+
+    function test_extname(data) {
+        compare(Paths.extname(data.actual), data.expected)
     }
 }

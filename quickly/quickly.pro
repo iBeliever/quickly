@@ -2,6 +2,8 @@ TEMPLATE = lib
 
 VERSION = 0.1
 
+CONFIG += c++11
+
 QT += qml quick
 
 HEADERS += $$PWD/src/plugin.h \
