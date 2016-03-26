@@ -91,3 +91,11 @@ bool Path::isAbsolute(const QString &path) const
 {
     return QFileInfo(path).isAbsolute();
 }
+
+QObject *Path::qmlSingleton(QQmlEngine *engine, QJSEngine *scriptEngine)
+{
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+
+    return new Path(engine);
+}

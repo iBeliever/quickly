@@ -11,6 +11,7 @@
 #include "plugin.h"
 
 #include <QtQml>
+#include <QDebug>
 
 #include "nodejs/filesystem.h"
 #include "nodejs/path.h"
@@ -20,6 +21,8 @@ void Plugin::registerTypes(const char *uri)
     // @uri Quickly
     Q_ASSERT(uri == QStringLiteral("Quickly"));
 
-    qmlRegisterSingletonType<Device>(uri, 0, 1, "FileSystem", FileSystem::qmlSingleton);
-    qmlRegisterSingletonType<Device>(uri, 0, 1, "Path", Path::qmlSingleton);
+    qDebug() << "Registering singletons...";
+
+    qmlRegisterSingletonType<FileSystem>(uri, 0, 1, "FileSystem", FileSystem::qmlSingleton);
+    qmlRegisterSingletonType<Path>(uri, 0, 1, "Paths", Path::qmlSingleton);
 }

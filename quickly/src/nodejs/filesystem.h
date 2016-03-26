@@ -14,17 +14,22 @@
 #include <QObject>
 
 #include <QString>
+#include <QQmlEngine>
 
 class FileSystem : public QObject
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE QString readFile(const QString &path) const;
-    Q_INVOKABLE void writeFile(const QString &path, const QString &data) const;
-    Q_INVOKABLE bool exists(const QString &path) const;
-    Q_INVOKABLE void mkdir(const QString &path) const;
-    Q_INVOKABLE void rmdir(const QString &path) const;
+    FileSystem(QObject *parent = nullptr) : QObject(parent) {}
+
+    // Q_INVOKABLE QString readFile(const QString &path) const;
+    // Q_INVOKABLE void writeFile(const QString &path, const QString &data) const;
+    // Q_INVOKABLE bool exists(const QString &path) const;
+    // Q_INVOKABLE void mkdir(const QString &path) const;
+    // Q_INVOKABLE void rmdir(const QString &path) const;
+
+    static QObject *qmlSingleton(QQmlEngine *engine, QJSEngine *scriptEngine);
 };
 
 #endif // FILE_SYSTEM_H

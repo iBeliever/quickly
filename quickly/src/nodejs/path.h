@@ -15,14 +15,17 @@
 
 #include <QString>
 #include <QVariantMap>
+#include <QQmlEngine>
 
 class Path : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString delimiter READ delimiter)
+    Q_PROPERTY(QString delimiter READ delimiter CONSTANT)
 
 public:
+    Path(QObject *parent = nullptr) : QObject(parent) {}
+
     QString delimiter() const;
 
     Q_INVOKABLE QString basename(const QString &path, const QString &ext = "") const;
@@ -31,6 +34,8 @@ public:
     Q_INVOKABLE QString format(const QVariantMap &pathObject) const;
     Q_INVOKABLE QVariantMap parse(QString path) const;
     Q_INVOKABLE bool isAbsolute(const QString &path) const;
+
+    static QObject *qmlSingleton(QQmlEngine *engine, QJSEngine *scriptEngine);
 };
 
 #endif // PATH_H
