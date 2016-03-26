@@ -50,29 +50,25 @@ To bridge the gap between the QML way of doing things and the ES6 style, ``qmlif
 
     Test 0.1 test.js
 
-    // package.yml
-    exports:
-        test: ExampleModule/Test
+    // quickly.json
+    {
+        "exports": {
+            "test": "ExampleModule/Test"
+        }
+    }
 
-Optionally, you can specify the default or latest version in the export::
-
-    // package.yml
-    exports:
-        test: ExampleModule/Test 0.1
-
-And install the ``package.yml`` file along side the ``qmldir`` and QML/JS files. Now in your app you'd do the following::
+And install the ``quickly.json`` file (from the build folder, NOT the original one in your source folder) along side the ``qmldir`` and QML/JS files. Now in your app you'd do the following::
 
     // app.js
     import {test} from 'test'
 
     test()
 
-    // package.yml
-    dependencies:
-       test: 0.1
+    // quickly.json
+    {
+        "dependencies": {
+            "test": "0.1"
+        }
+    }
 
-If a default version is available and you want to use that, you can leave the dependency out of the ``package.yml`` file.
-
-Note that the ``package.yml`` is used to both list dependencies and/or exports, depending on your needs. To see all available QMLified modules, run::
-
-    $ qmlify --modules
+If a default version is available and you want to use that, you can leave the dependency out of the ``quickly.json`` file.
