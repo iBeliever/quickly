@@ -24,7 +24,7 @@ public:
     BaseModule(QQmlEngine *engine = nullptr) : QObject(engine), m_engine(engine) {}
 
 protected:
-    void throwException(const QString &message) const;
+    void throwError(const QString &message) const;
 
 private:
     QQmlEngine *m_engine;

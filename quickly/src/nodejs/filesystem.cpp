@@ -12,7 +12,6 @@
 
 #include <QFile>
 #include <QTextStream>
-#include <private/qv8engine_p.h>
 
 QString FileSystem::readFile(const QString &path) const
 {
@@ -20,7 +19,7 @@ QString FileSystem::readFile(const QString &path) const
 
     QFile file(resolvedPath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        throwException(QStringLiteral("File does not exist or is not readable: %1").arg(resolvedPath));
+        throwError(QStringLiteral("File does not exist or is not readable: %1").arg(resolvedPath));
         return "";
     }
 

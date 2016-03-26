@@ -4,7 +4,7 @@ VERSION = 0.1
 
 CONFIG += c++11
 
-QT += qml quick quick_private
+QT += core-private qml qml-private
 
 HEADERS += $$PWD/src/plugin.h \
            $$PWD/src/nodejs/filesystem.h \

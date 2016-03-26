@@ -14,7 +14,7 @@
 #include <QTextStream>
 #include <private/qv8engine_p.h>
 
-void BaseModule::throwException(const QString &message) const
+void BaseModule::throwError(const QString &message) const
 {
     QV8Engine::getV4(m_engine)->throwError(message);
 }
