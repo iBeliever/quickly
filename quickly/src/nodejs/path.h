@@ -11,20 +11,20 @@
 #ifndef PATH_H
 #define PATH_H
 
-#include <QObject>
+#include "basemodule.h"
 
 #include <QString>
 #include <QVariantMap>
 #include <QQmlEngine>
 
-class Path : public QObject
+class Path : public BaseModule
 {
     Q_OBJECT
 
     Q_PROPERTY(QString delimiter READ delimiter CONSTANT)
 
 public:
-    Path(QObject *parent = nullptr) : QObject(parent) {}
+    Path(QQmlEngine *engine) : BaseModule(engine) {}
 
     QString delimiter() const;
 

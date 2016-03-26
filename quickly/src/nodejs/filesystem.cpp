@@ -10,9 +10,36 @@
 
 #include "filesystem.h"
 
+#include <QFile>
+#include <QTextStream>
+#include <private/qv8engine_p.h>
+
+QString FileSystem::readFile(const QString &path) const
+{
+    QString resolvedPath = resolve(path);
+
+    QFile file(resolvedPath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        throwException(QStringLiteral("File does not exist or is not readable: %1").arg(resolvedPath));
+        return "";
+    }
+
+    QTextStream in(&file);
+
+    return in.readAll();
+}
+
+QString FileSystem::resolve(const QString &pathOrUrl) const
+{
+    if (pathOrUrl.startsWith("file://")) {
+        return pathOrUrl.right(pathOrUrl.length() - 7);
+    } else {
+        return pathOrUrl;
+    }
+}
+
 QObject *FileSystem::qmlSingleton(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
-    Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
 
     return new FileSystem(engine);

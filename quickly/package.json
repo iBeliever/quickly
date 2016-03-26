@@ -3,8 +3,7 @@
   "license": "MPL-2.0",
   "scripts": {
     "build": "qmlify --no-polyfills -d build src",
-    "test": "qmlify -d test/build test && qmltestrunner -input test/build",
-    "install-qml": "mkdir -p `qmake -query QT_INSTALL_QML`/Quickly && cp -r build/* src/qmldir `qmake -query QT_INSTALL_QML`/Quickly"
+    "test": "qmlify -d test/build test && cp -r test/assets test/build/ && qmltestrunner -input test/build"
   },
   "dependencies": {
     "aurelia-polyfills": "^1.0.0-beta.1.0.6",
