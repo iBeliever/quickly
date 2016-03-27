@@ -14,6 +14,8 @@ var args = require('yargs')
     .default('polyfills', true)
     .describe('polyfills', 'Include the Quickly polyfills library')
     .describe('import', 'QML import path')
+    .default('depends', false)
+    .describe('depends', 'List all the dependencies of a particular file or directory')
     .help('h')
     .alias('h', 'help')
     .argv
@@ -25,8 +27,13 @@ if (args.import) {
     qmlify.addQMLImportPath(args.import)
 }
 
-if (args.outDir) {
-    qmlify.build_dir(source, args.outDir, options)
+if (args.depends) {
+    const deps = qmlify.list_depends(source, args.outDir)
+    console.log(deps.join('\n'))
 } else {
-    qmlify.build_file(source, args.outFile, options)
+    if (args.outDir) {
+        qmlify.build_dir(source, args.outDir, options)
+    } else {
+        qmlify.build_file(source, args.outFile, options)
+    }
 }

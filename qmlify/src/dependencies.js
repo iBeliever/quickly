@@ -58,8 +58,26 @@ export class Dependency {
         this.importPath = importPath
         this.file = file
 
-        if (file)
+        if (file) {
+            this.filename = file.filename
             this.globals = file.exportedGlobals
+        }
+    }
+
+    static fromJSON(json) {
+        const dep = new Dependency()
+
+        dep.globals = json['globals']
+        dep.filename = json['filename']
+
+        return dep
+    }
+
+    get json() {
+        return {
+            'filename': this.filename,
+            'globals': this.globals
+        }
     }
 
     importQualifier(importAs) {

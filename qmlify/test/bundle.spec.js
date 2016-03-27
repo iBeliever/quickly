@@ -123,6 +123,111 @@ describe('Bundle', function() {
         })
     })
 
+    describe('cache', function() {
+        before('create the bundle', function() {
+            this.bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })
+        })
+
+        before('build everything', function() {
+            this.bundle.build_all()
+        })
+
+        context('after building everything', function() {
+            it('should include all the built files', function() {
+                expect(this.bundle.cache).to.include.keys([
+                    'dependencies/lodash/index.js', 'index.js', 'subdir/index.js'
+                ])
+            })
+        })
+    })
+
+    describe('dependencies', function() {
+        context('after building everything', function() {
+            before('create the bundle', function() {
+                this.bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })
+            })
+
+            before('build everything', function() {
+                this.bundle.build_all()
+            })
+
+            it('should include all the local files', function() {
+                console.log(this.bundle.dependencies())
+                expect(this.bundle.dependencies()).to.include.members([
+                    this.bundle.resolve('index.js'), this.bundle.resolve('subdir/index.js')
+                ])
+            })
+
+            it('should include exported npm dependencies', function() {
+                expect(this.bundle.dependencies()).to.include.members([
+                    path.resolve(__dirname, '../node_modules/lodash/index.js')
+                ])
+            })
+
+            it('should include imported npm dependencies', function() {
+                expect(this.bundle.dependencies()).to.include.members([
+                    path.resolve(__dirname, '../node_modules/lodash/index.js')
+                ])
+            })
+        })
+
+        context('without a previous build', function() {
+            before('create the bundle', function() {
+                this.bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })
+            })
+
+            it('should include all the local files', function() {
+                console.log(this.bundle.dependencies())
+                expect(this.bundle.dependencies()).to.include.members([
+                    this.bundle.resolve('index.js'), this.bundle.resolve('subdir/index.js')
+                ])
+            })
+
+            it('should not include exported npm dependencies', function() {
+                expect(this.bundle.dependencies()).to.not.include.members([
+                    path.resolve(__dirname, '../node_modules/lodash/index.js')
+                ])
+            })
+
+            it('should not include imported npm dependencies', function() {
+                expect(this.bundle.dependencies()).to.not.include.members([
+                    path.resolve(__dirname, '../node_modules/lodash/index.js')
+                ])
+            })
+        })
+
+        context('with a previous build', function() {
+            before('create the bundle with an existing cache', function() {
+                const bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })
+                bundle.build_all()
+
+                const cache = bundle.cache
+
+                this.bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })
+                this.bundle.cache = cache
+            })
+
+            it('should include all the local files', function() {
+                console.log(this.bundle.dependencies())
+                expect(this.bundle.dependencies()).to.include.members([
+                    this.bundle.resolve('index.js'), this.bundle.resolve('subdir/index.js')
+                ])
+            })
+
+            it('should include exported npm dependencies', function() {
+                expect(this.bundle.dependencies()).to.include.members([
+                    path.resolve(__dirname, '../node_modules/lodash/index.js')
+                ])
+            })
+
+            it('should include imported npm dependencies', function() {
+                expect(this.bundle.dependencies()).to.include.members([
+                    path.resolve(__dirname, '../node_modules/lodash/index.js')
+                ])
+            })
+        })
+    })
+
     describe('building a simple file', function() {
         before('create the bundle', function() {
             this.bundle = new Bundle(src_dirname, out_dirname, { usePolyfills: false })

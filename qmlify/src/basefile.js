@@ -2,9 +2,12 @@ import {registerFileType} from './bundle'
 import {require} from './dependencies'
 import path from 'path'
 import fs from 'fs'
-import {ImportError} from './dependencies'
+import {ImportError, Dependency} from './dependencies'
+import _ from 'lodash'
 
 export class BaseFile {
+    dependencies = {}
+
     constructor(filename, bundle, {out_filename, useBabel, usePolyfills, ...options} = {}) {
         this.bundle = bundle
         this.useBabel = useBabel !== undefined ? useBabel : bundle.useBabel
@@ -32,6 +35,18 @@ export class BaseFile {
         this.local_dirname = path.dirname(this.filename)
     }
 
+    loadFromCache(cache) {
+        this.dependencies = _.mapValues(cache['dependencies'], json => Dependency.fromJSON(json))
+    }
+
+    get cache() {
+        return {
+            'src_filename': this.src_filename,
+            'out_filename': this.out_filename,
+            'dependencies': _.mapValues(this.dependencies, dep => dep.json)
+        }
+    }
+
     relative(filename) {
         return path.relative(this.out_dirname ? this.out_dirname : this.bundle.src_dirname, filename)
     }
@@ -56,6 +71,7 @@ export class BaseFile {
     build() {
         this.text = fs.readFileSync(this.src_filename, 'utf8')
         this.transform()
+        this.isBuilt = true
     }
 
     save() {

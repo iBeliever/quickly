@@ -8,7 +8,17 @@ export class JSFile extends BaseFile {
     postHeader = templates.postHeader
     footer = ''
     globals = []
-    dependencies = {}
+
+    loadFromCache(cache) {
+        super.loadFromCache(cache)
+        this.globals = cache['globals']
+    }
+
+    get cache() {
+        return Object.assign({}, super.cache, {
+            'globals': this.globals
+        })
+    }
 
     get importedGlobals() {
         const globals = {}
@@ -43,7 +53,11 @@ export class JSFile extends BaseFile {
 
         this.postHeader = this.postHeader.replace('FILENAME', this.basename)
 
-        if (this.usePolyfills) {
+        const bundle = this.bundle ? this.bundle.parentBundle || this.bundle : null
+
+        const exports = bundle && bundle.config && bundle.config.exports
+
+        if (this.usePolyfills && (!exports || exports['quickly-polyfills'])) {
             this.injectRequire('quickly-polyfills')
         }
 
