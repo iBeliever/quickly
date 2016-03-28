@@ -8,20 +8,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef FILE_SYSTEM_H
-#define FILE_SYSTEM_H
+#ifndef FILESYSTEM_H
+#define FILESYSTEM_H
 
 #include "basemodule.h"
 
 #include <QString>
 #include <QQmlEngine>
 
-class FileSystem : public BaseModule
+class Filesystem : public BaseModule
 {
     Q_OBJECT
 
 public:
-    FileSystem(QQmlEngine *engine) : BaseModule(engine) {}
+    Filesystem(QQmlEngine *engine) : BaseModule(engine) {}
 
     Q_INVOKABLE QString readFile(const QString &path) const;
     // Q_INVOKABLE void writeFile(const QString &path, const QString &data) const;
@@ -35,4 +35,4 @@ private:
     QString resolve(const QString &pathOrUrl) const;
 };
 
-#endif // FILE_SYSTEM_H
+#endif // FILESYSTEM_H

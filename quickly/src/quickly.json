@@ -2,8 +2,11 @@
   "exports": {
     "localstorage": "QtQuick.LocalStorage/LocalStorage 2.0",
     "quickly-polyfills": "Quickly/Polyfills",
-    "fs": "Quickly/FileSystem",
+    "fs": "Quickly/Filesystem",
     "path": "Quickly/Path",
-    "url": "Quickly/Url"
+    "url": "Quickly/Url",
+    "assert": "Quickly/Assert",
+    "querystring": "Quickly/Querystring",
+    "punycode": "Quickly/Punycode"
   }
 }

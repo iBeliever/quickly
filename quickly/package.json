@@ -6,6 +6,7 @@
     "test": "qmlify -d test/build test && cp -r test/assets test/build/ && qmltestrunner -input test/build"
   },
   "dependencies": {
+    "assert": "^1.3.0",
     "aurelia-polyfills": "^1.0.0-beta.1.0.6",
     "es6-promise": "^3.1.2",
     "url": "^0.11.0",
