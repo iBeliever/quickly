@@ -24,7 +24,7 @@ QMLIFY += src
 target.path = $$[QT_INSTALL_QML]/Quickly
 
 qml.files += src/qmldir \
-             build/src/*
+             build/src-qmlified/*
 qml.path = $$[QT_INSTALL_QML]/Quickly
 
 INSTALLS += target qml
