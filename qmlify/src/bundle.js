@@ -49,6 +49,10 @@ export class Bundle {
         }
     }
 
+    patch(file) {
+        // Nothing to do here
+    }
+
     relative(filename) {
         return path.relative(this.out_dirname, filename)
     }
@@ -156,12 +160,7 @@ export class Bundle {
         if (!file)
             throw new FileTypeError(`File type not recognized: ${filename}`)
 
-        if (file.isBuilt)
-            return file
-
-        file.build();
-
-        (this.parentBundle || this).cache[file.filename] = file.cache
+        file.build()
 
         return file
     }

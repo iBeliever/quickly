@@ -4,7 +4,7 @@ import path from 'path'
 import assert from 'assert'
 import {Bundle} from './bundle'
 
-// const dependencyMap = {}
+const dependencyMap = {}
 const requireHooks = [requireLocalFile]
 
 const LOCAL_PREFIX = './'
@@ -12,6 +12,39 @@ const PARENT_PREFIX = '../'
 
 export function requireHook(hook) {
     requireHooks.push(hook)
+}
+
+export function checkDependency(name, target, chain) {
+    if (!dependencyMap[name])
+        return
+
+    const dependencies = dependencyMap[name]
+
+    if (!chain)
+        chain = [target, name]
+
+    for (const dep of dependencies) {
+        const newChain = chain.concat([dep])
+
+        if (dep === name)
+            throw new Error(`Module cannot depend on itself: ${dep}`)
+
+        if (dep === target)
+            throw new DependencyCycleError(`Dependency cycle: ${newChain.join(' - ')}`)
+        else
+            checkDependency(dep, target, newChain)
+    }
+}
+
+export function addDependency(source, dependency) {
+    if (source === dependency)
+        throw new Error(`Module cannot depend on itself: ${source}`)
+
+    if (!dependencyMap[source])
+        dependencyMap[source] = []
+    dependencyMap[source].push(dependency)
+
+    checkDependency(dependency, source)
 }
 
 export function require(importPath, context) {
@@ -22,6 +55,16 @@ export function require(importPath, context) {
         const dependency = requireHook(importPath, context)
 
         if (dependency) {
+            if (dependency.file) {
+                if (context.filename) {
+                    addDependency(context.filename, dependency.filename)
+                }
+
+                dependency.file.build()
+
+                dependency.globals = dependency.file.exportedGlobals
+            }
+
             return dependency
         }
     }
@@ -40,14 +83,18 @@ function requireLocalFile(importPath, context) {
         throw new ImportError(`Don't include the '.js' extension when importing local files: ${importPath}`)
 
     const filename = path.normalize(`${importPath}.js`)
-    const src_filename = context.resolve(filename)
 
-    if (!fs.existsSync(src_filename))
-        throw new ImportError(`Unable to find local file: ${filename} (resolved to ${src_filename})`)
+    if (fs.existsSync(context.resolve(filename))) {
+        const file = context.bundle.build(context.resolve(filename))
 
-    const file = context.bundle.build(src_filename)
+        return new Dependency(`"${importPath}.js"`, importPath, file)
+    } else if (context.bundle.parentBundle && fs.existsSync(context.bundle.parentBundle.resolve(filename))) {
+        const file = context.bundle.parentBundle.build(context.bundle.parentBundle.resolve(filename))
 
-    return new Dependency(`"${importPath}.js"`, importPath, file)
+        return new Dependency(`"${context.relative(file.out_filename)}"`, importPath, file)
+    } else {
+        throw new ImportError(`Unable to find local file: ${filename} (resolved to ${context.resolve(filename)})`)
+    }
 }
 
 export class Dependency {

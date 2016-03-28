@@ -57,7 +57,7 @@ export class JSFile extends BaseFile {
 
         const exports = bundle && bundle.config && bundle.config.exports
 
-        if (this.usePolyfills && (!exports || exports['quickly-polyfills'])) {
+        if (this.usePolyfills && (!exports || !exports['quickly-polyfills'])) {
             this.injectRequire('quickly-polyfills')
         }
 

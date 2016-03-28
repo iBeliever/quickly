@@ -2,29 +2,27 @@ Index: es6-promise/dist/es6-promise.js
 ===================================================================
 --- es6-promise/dist/es6-promise.js
 +++ es6-promise/dist/es6-promise.js
-@@ -1,5 +1,6 @@
- .pragma library
-+.import "../../../polyfills/timeout.js" as QML_timeout
+@@ -5,8 +5,10 @@
+  *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
+  * @version   3.1.2
+  */
  
- var __filename = Qt.resolvedUrl('es6-promise.js').substring(7);
- var __dirname = __filename.substring(0, __filename.lastIndexOf('/'));
- 
-@@ -10,8 +11,10 @@
- function require(qualifier) {
-     return qualifier.module ? qualifier.module.exports : qualifier;
- }
- 
-+var setTimeout = QML_timeout.setTimeout;
++require('./polyfills/timeout');
 +
- /*!
-  * @overview es6-promise - a tiny implementation of Promises/A+.
-  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
-  * @license   Licensed under MIT license
-@@ -75,49 +78,8 @@
-     var lib$es6$promise$asap$$browserGlobal = lib$es6$promise$asap$$browserWindow || {};
-     var lib$es6$promise$asap$$BrowserMutationObserver = lib$es6$promise$asap$$browserGlobal.MutationObserver || lib$es6$promise$asap$$browserGlobal.WebKitMutationObserver;
-     var lib$es6$promise$asap$$isNode = typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
+ (function() {
+     "use strict";
+     function lib$es6$promise$utils$$objectOrFunction(x) {
+       return typeof x === 'function' || (typeof x === 'object' && x !== null);
+@@ -57,54 +59,8 @@
+     function lib$es6$promise$asap$$setAsap(asapFn) {
+       lib$es6$promise$asap$$asap = asapFn;
+     }
  
+-    var lib$es6$promise$asap$$browserWindow = (typeof window !== 'undefined') ? window : undefined;
+-    var lib$es6$promise$asap$$browserGlobal = lib$es6$promise$asap$$browserWindow || {};
+-    var lib$es6$promise$asap$$BrowserMutationObserver = lib$es6$promise$asap$$browserGlobal.MutationObserver || lib$es6$promise$asap$$browserGlobal.WebKitMutationObserver;
+-    var lib$es6$promise$asap$$isNode = typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
+-
 -    // test for web worker but not in IE10
 -    var lib$es6$promise$asap$$isWorker = typeof Uint8ClampedArray !== 'undefined' &&
 -      typeof importScripts !== 'undefined' &&
@@ -70,7 +68,7 @@ Index: es6-promise/dist/es6-promise.js
        return function() {
          setTimeout(lib$es6$promise$asap$$flush, 1);
        };
-@@ -137,32 +99,10 @@
+@@ -124,32 +80,10 @@
  
        lib$es6$promise$asap$$len = 0;
      }
@@ -104,9 +102,20 @@ Index: es6-promise/dist/es6-promise.js
        var parent = this;
        var state = parent._state;
  
-@@ -961,5 +901,5 @@
-       this['ES6Promise'] = lib$es6$promise$umd$$ES6Promise;
-     }
+@@ -939,15 +873,8 @@
+       'Promise': lib$es6$promise$promise$$default,
+       'polyfill': lib$es6$promise$polyfill$$default
+     };
+ 
+-    /* global define:true module:true window: true */
+-    if (typeof define === 'function' && define['amd']) {
+-      define(function() { return lib$es6$promise$umd$$ES6Promise; });
+-    } else if (typeof module !== 'undefined' && module['exports']) {
+-      module['exports'] = lib$es6$promise$umd$$ES6Promise;
+-    } else if (typeof this !== 'undefined') {
+-      this['ES6Promise'] = lib$es6$promise$umd$$ES6Promise;
+-    }
++    module.exports = lib$es6$promise$umd$$ES6Promise;
  
      lib$es6$promise$polyfill$$default();
 -}).call(this);

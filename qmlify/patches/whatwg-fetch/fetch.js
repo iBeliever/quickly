@@ -2,20 +2,9 @@ Index: whatwg-fetch/fetch.js
 ===================================================================
 --- whatwg-fetch/fetch.js
 +++ whatwg-fetch/fetch.js
-@@ -1,5 +1,6 @@
- .pragma library
-+.import "../es6-promise/dist/es6-promise.js" as QML_promise
- 
- var __filename = Qt.resolvedUrl('fetch.js').substring(7);
- var __dirname = __filename.substring(0, __filename.lastIndexOf('/'));
- 
-@@ -10,12 +11,14 @@
- function require(qualifier) {
-     return qualifier.module ? qualifier.module.exports : qualifier;
- }
- 
+@@ -1,8 +1,10 @@
 -(function(self) {
-+var Promise = require(QML_promise).Promise;
++var Promise = require('es6-promise').Promise;
 +
 +(function(global) {
    'use strict';
@@ -26,13 +15,13 @@ Index: whatwg-fetch/fetch.js
    }
  
    function normalizeName(name) {
-@@ -120,18 +123,18 @@
+@@ -107,18 +109,18 @@
      return fileReaderReady(reader)
    }
  
    var support = {
 -    blob: 'FileReader' in self && 'Blob' in self && (function() {
-+    blob: 'FileReader' in global && 'Blob' in global && (function() {
++    blob: typeof FileReader !== 'undefined' && (function() {
        try {
          new Blob();
          return true
@@ -42,13 +31,13 @@ Index: whatwg-fetch/fetch.js
      })(),
 -    formData: 'FormData' in self,
 -    arrayBuffer: 'ArrayBuffer' in self
-+    formData: 'FormData' in global,
-+    arrayBuffer: 'ArrayBuffer' in global
++    formData: typeof FormData !== 'undefined',
++    arrayBuffer: typeof FileReader !== 'ArrayBuffer'
    }
  
    function Body() {
      this.bodyUsed = false
-@@ -331,13 +334,13 @@
+@@ -319,13 +321,13 @@
  
      return new Response(null, {status: status, headers: {location: url}})
    }
@@ -66,7 +55,7 @@ Index: whatwg-fetch/fetch.js
        var request
        if (Request.prototype.isPrototypeOf(input) && !init) {
          request = input
-@@ -359,26 +362,25 @@
+@@ -347,26 +349,32 @@
  
          return;
        }
@@ -76,6 +65,13 @@ Index: whatwg-fetch/fetch.js
 -        if (status < 100 || status > 599) {
 +      xhr.onreadystatechange = function() {
 +        if (xhr.readyState === XMLHttpRequest.DONE) {
++          var status = (xhr.status === 1223) ? 204 : xhr.status
++
++          if (status < 100 || status > 599) {
++            reject(new TypeError('Network request failed'))
++            return
++          }
++
 +          var options = {
 +            status: xhr.status,
 +            statusText: xhr.statusText,
@@ -106,7 +102,7 @@ Index: whatwg-fetch/fetch.js
  
        xhr.open(request.method, request.url, true)
  
-@@ -396,6 +398,11 @@
+@@ -384,6 +392,6 @@
  
        xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
      })
@@ -115,8 +111,3 @@ Index: whatwg-fetch/fetch.js
 -})(typeof self !== 'undefined' ? self : this);
 +  global.fetch.polyfill = true
 +})(global);
-+
-+var Headers = global.Headers;
-+var Request = global.Request;
-+var Response = global.Response;
-+var fetch = global.fetch;

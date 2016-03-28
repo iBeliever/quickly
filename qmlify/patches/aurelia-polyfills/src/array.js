@@ -2,21 +2,19 @@ Index: aurelia-polyfills/src/array.js
 ===================================================================
 --- aurelia-polyfills/src/array.js
 +++ aurelia-polyfills/src/array.js
-@@ -1,5 +1,6 @@
- .pragma library
-+.import "./symbol.js" as QML_symbol
- 
- var __filename = Qt.resolvedUrl('array.js').substring(7);
- var __dirname = __filename.substring(0, __filename.lastIndexOf('/'));
- 
-@@ -10,8 +11,10 @@
- function require(qualifier) {
-     return qualifier.module ? qualifier.module.exports : qualifier;
- }
- 
-+var Symbol = QML_symbol.global.Symbol;
+@@ -1,11 +1,13 @@
++import './symbol'
 +
- 'use strict';
- 
  if (!Array.from) {
-   Array.from = function () {
+   Array.from = (function () {
+     var toInteger = function(it) {
+       return isNaN(it = +it) ? 0 : (it > 0 ? Math.floor : Math.ceil)(it);
+     };
+-    var toLength = function(it) { 
+-      return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991 
++    var toLength = function(it) {
++      return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
+     };
+     var iterCall = function(iter, fn, a1, a2) {
+       try {
+         fn(a1, a2);

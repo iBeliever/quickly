@@ -69,9 +69,26 @@ export class BaseFile {
     }
 
     build() {
-        this.text = fs.readFileSync(this.src_filename, 'utf8')
-        this.transform()
-        this.isBuilt = true
+        if (this.isBuilt)
+            return
+
+        this.text = this.sourceText = fs.readFileSync(this.src_filename, 'utf8').trim() + '\n'
+
+        try {
+            this.bundle.patch(this)
+
+            this.transform()
+            this.isBuilt = true
+        } catch (error) {
+            if (this.out_filename) {
+                mkdirs(this.out_dirname)
+                fs.writeFileSync(this.out_filename.replace('.js', '-orig.js'), this.sourceText)
+            }
+
+            throw error
+        }
+
+        (this.bundle.parentBundle || this.bundle).cache[this.filename] = this.cache
     }
 
     save() {

@@ -20,6 +20,5 @@ export function patch(file, filename) {
     } else {
         file.text = patched
         file.patched = true
-        file.findGlobals()
     }
 }

@@ -1,7 +1,7 @@
 import {Bundle} from './bundle'
 import {requireHook, Dependency} from './dependencies'
-import {patch} from './patching'
 import {findFile} from './util'
+import {patch} from './patching'
 import fs from 'fs'
 import path from 'path'
 
@@ -26,18 +26,14 @@ export class Package extends Bundle {
         this.config = JSON.parse(fs.readFileSync(path.join(this.src_dirname, 'package.json'), 'utf8'))
     }
 
-    build(filename) {
-        const file = super.build(filename, { useBabel: filename.includes('src' ) })
-
-        patch(file, path.join(this.name, path.relative(this.src_dirname, filename)))
-
-        return file
+    patch(file) {
+        patch(file, path.join(this.name, path.relative(this.src_dirname, file.src_filename)))
     }
 
     require(filename) {
         if (!filename)
             filename = this.main_filename
-        return this.build(path.resolve(this.src_dirname, filename))
+        return this.getFile(path.resolve(this.src_dirname, filename), { useBabel: filename.includes('src' ) })
     }
 
     get main_filename() {
@@ -70,7 +66,7 @@ export function requireModule(importPath, context) {
     if (importPath.includes('/')) {
         [moduleName, ...filename] = importPath.split('/')
 
-        filename = filename.join('/') + '.js'
+        filename = filename[0] ? filename.join('/') + '.js' : null
     }
 
     if (moduleName.endsWith('.js'))
