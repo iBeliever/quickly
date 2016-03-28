@@ -23,6 +23,6 @@ void Plugin::registerTypes(const char *uri)
 
     qDebug() << "Registering singletons...";
 
-    qmlRegisterSingletonType<FileSystem>(uri, 0, 1, "FileSystem", FileSystem::qmlSingleton);
+    qmlRegisterSingletonType<Filesystem>(uri, 0, 1, "Filesystem", Filesystem::qmlSingleton);
     qmlRegisterSingletonType<Path>(uri, 0, 1, "Paths", Path::qmlSingleton);
 }

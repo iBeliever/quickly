@@ -13,7 +13,7 @@
 #include <QFile>
 #include <QTextStream>
 
-QString FileSystem::readFile(const QString &path) const
+QString Filesystem::readFile(const QString &path) const
 {
     QString resolvedPath = resolve(path);
 
@@ -28,7 +28,7 @@ QString FileSystem::readFile(const QString &path) const
     return in.readAll();
 }
 
-QString FileSystem::resolve(const QString &pathOrUrl) const
+QString Filesystem::resolve(const QString &pathOrUrl) const
 {
     if (pathOrUrl.startsWith("file://")) {
         return pathOrUrl.right(pathOrUrl.length() - 7);
@@ -37,9 +37,9 @@ QString FileSystem::resolve(const QString &pathOrUrl) const
     }
 }
 
-QObject *FileSystem::qmlSingleton(QQmlEngine *engine, QJSEngine *scriptEngine)
+QObject *Filesystem::qmlSingleton(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(scriptEngine)
 
-    return new FileSystem(engine);
+    return new Filesystem(engine);
 }

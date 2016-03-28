@@ -22,17 +22,17 @@ function require(qualifier) {
     return qualifier.module ? qualifier.module.exports : qualifier;
 }
 
+var setTimeout = global.setTimeout = QML_timeout.global.setTimeout;
+var Symbol = global.Symbol = QML_aurelia_polyfills_src_symbol.global.Symbol;
 var WeakMap = global.WeakMap = QML_aurelia_polyfills_src_collections.global.WeakMap;
 var Map = global.Map = QML_aurelia_polyfills_src_collections.global.Map;
 var Set = global.Set = QML_aurelia_polyfills_src_collections.global.Set;
 var WeakSet = global.WeakSet = QML_aurelia_polyfills_src_collections.global.WeakSet;
 var Reflect = global.Reflect = QML_aurelia_polyfills_src_reflect.global.Reflect;
-var Symbol = global.Symbol = QML_aurelia_polyfills_src_symbol.global.Symbol;
 var Headers = global.Headers = QML_whatwg_fetch.global.Headers;
 var Request = global.Request = QML_whatwg_fetch.global.Request;
 var Response = global.Response = QML_whatwg_fetch.global.Response;
 var fetch = global.fetch = QML_whatwg_fetch.global.fetch;
-var setTimeout = global.setTimeout = QML_timeout.global.setTimeout;
 
 'use strict';
 

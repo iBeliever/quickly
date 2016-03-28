@@ -4,27 +4,30 @@
     "Polyfills": {
       "latestVersion": "0.1",
       "globals": [
+        "setTimeout",
+        "Symbol",
         "WeakMap",
         "Map",
         "Set",
         "WeakSet",
         "Reflect",
-        "Symbol",
         "Headers",
         "Request",
         "Response",
         "fetch",
-        "setTimeout",
         "Promise"
       ]
     },
     "Promise": {
       "latestVersion": "0.1",
-      "globals": []
+      "globals": [
+        "setTimeout"
+      ]
     },
     "Http": {
       "latestVersion": "0.1",
       "globals": [
+        "setTimeout",
         "Headers",
         "Request",
         "Response",
@@ -39,30 +42,37 @@
       "latestVersion": "0.1",
       "globals": []
     },
-    "QueryString": {
+    "Querystring": {
+      "latestVersion": "0.1",
+      "globals": []
+    },
+    "Assert": {
       "latestVersion": "0.1",
       "globals": []
     }
   },
   "globals": {
+    "setTimeout": "Http",
+    "Symbol": "Polyfills",
     "WeakMap": "Polyfills",
     "Map": "Polyfills",
     "Set": "Polyfills",
     "WeakSet": "Polyfills",
     "Reflect": "Polyfills",
-    "Symbol": "Polyfills",
     "Headers": "Http",
     "Request": "Http",
     "Response": "Http",
     "fetch": "Http",
-    "setTimeout": "Polyfills",
     "Promise": "Polyfills"
   },
   "exports": {
     "localstorage": "QtQuick.LocalStorage/LocalStorage 2.0",
     "quickly-polyfills": "Quickly/Polyfills",
-    "fs": "Quickly/FileSystem",
+    "fs": "Quickly/Filesystem",
     "path": "Quickly/Path",
-    "url": "Quickly/Url"
+    "url": "Quickly/Url",
+    "assert": "Quickly/Assert",
+    "querystring": "Quickly/Querystring",
+    "punycode": "Quickly/Punycode"
   }
 }

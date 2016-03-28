@@ -12,6 +12,8 @@ function require(qualifier) {
     return qualifier.module ? qualifier.module.exports : qualifier;
 }
 
+var setTimeout = global.setTimeout = QML_es6Promise.global.setTimeout;
+
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

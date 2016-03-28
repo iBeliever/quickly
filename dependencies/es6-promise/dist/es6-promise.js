@@ -1,5 +1,5 @@
 .pragma library
-.import "../../../polyfills/timeout.js" as QML_timeout
+.import "../../../polyfills/timeout.js" as QML_polyfills_timeout
 
 var __filename = Qt.resolvedUrl('es6-promise.js').substring(7);
 var __dirname = __filename.substring(0, __filename.lastIndexOf('/'));
@@ -12,7 +12,7 @@ function require(qualifier) {
     return qualifier.module ? qualifier.module.exports : qualifier;
 }
 
-var setTimeout = QML_timeout.setTimeout;
+var setTimeout = global.setTimeout = QML_polyfills_timeout.global.setTimeout;
 
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -73,11 +73,6 @@ var setTimeout = QML_timeout.setTimeout;
     function lib$es6$promise$asap$$setAsap(asapFn) {
       lib$es6$promise$asap$$asap = asapFn;
     }
-
-    var lib$es6$promise$asap$$browserWindow = (typeof window !== 'undefined') ? window : undefined;
-    var lib$es6$promise$asap$$browserGlobal = lib$es6$promise$asap$$browserWindow || {};
-    var lib$es6$promise$asap$$BrowserMutationObserver = lib$es6$promise$asap$$browserGlobal.MutationObserver || lib$es6$promise$asap$$browserGlobal.WebKitMutationObserver;
-    var lib$es6$promise$asap$$isNode = typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
 
     function lib$es6$promise$asap$$useSetTimeout() {
       return function() {
@@ -892,14 +887,7 @@ var setTimeout = QML_timeout.setTimeout;
       'polyfill': lib$es6$promise$polyfill$$default
     };
 
-    /* global define:true module:true window: true */
-    if (typeof define === 'function' && define['amd']) {
-      define(function() { return lib$es6$promise$umd$$ES6Promise; });
-    } else if (typeof module !== 'undefined' && module['exports']) {
-      module['exports'] = lib$es6$promise$umd$$ES6Promise;
-    } else if (typeof this !== 'undefined') {
-      this['ES6Promise'] = lib$es6$promise$umd$$ES6Promise;
-    }
+    module.exports = lib$es6$promise$umd$$ES6Promise;
 
     lib$es6$promise$polyfill$$default();
 }).call(exports);

@@ -2,7 +2,7 @@
 <RCC version="1.0">
 
 <qresource prefix="/Quickly">
-	<file>dependencies/aurelia-pal/dist/commonjs/aurelia-pal.js</file>
+	<file>dependencies/assert/assert.js</file>
 	<file>dependencies/aurelia-polyfills/src/array.js</file>
 	<file>dependencies/aurelia-polyfills/src/collections.js</file>
 	<file>dependencies/aurelia-polyfills/src/number.js</file>
@@ -11,12 +11,15 @@
 	<file>dependencies/aurelia-polyfills/src/string.js</file>
 	<file>dependencies/aurelia-polyfills/src/symbol.js</file>
 	<file>dependencies/es6-promise/dist/es6-promise.js</file>
+	<file>dependencies/inherits/inherits.js</file>
 	<file>dependencies/punycode/punycode.js</file>
 	<file>dependencies/querystring/decode.js</file>
 	<file>dependencies/querystring/encode.js</file>
 	<file>dependencies/querystring/index.js</file>
 	<file>dependencies/url/url.js</file>
 	<file>dependencies/url/util.js</file>
+	<file>dependencies/util/support/isBuffer.js</file>
+	<file>dependencies/util/util.js</file>
 	<file>dependencies/whatwg-fetch/fetch.js</file>
 	<file>polyfills/Timeout.qml</file>
 	<file>polyfills/http.js</file>

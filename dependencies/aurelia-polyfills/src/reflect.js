@@ -13,16 +13,15 @@ function require(qualifier) {
 
 'use strict';
 
-
 var emptyMetadata = Object.freeze({});
 var metadataContainerKey = '__metadata__';
 var bind = Function.prototype.bind;
 
-if (typeof global.Reflect === 'undefined') {
+if (typeof Reflect === 'undefined') {
   global.Reflect = {};
 }
 
-var Reflect = global.Reflect;
+var Reflect = global.Reflect || Reflect;
 
 if (typeof Reflect.getOwnMetadata !== 'function') {
   Reflect.getOwnMetadata = function (metadataKey, target, targetKey) {

@@ -12,7 +12,7 @@ function require(qualifier) {
     return qualifier.module ? qualifier.module.exports : qualifier;
 }
 
-var Symbol = QML_symbol.global.Symbol;
+var Symbol = global.Symbol = QML_symbol.global.Symbol;
 
 'use strict';
 

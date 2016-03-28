@@ -1,5 +1,5 @@
 .pragma library
-.import "../es6-promise/dist/es6-promise.js" as QML_promise
+.import "../es6-promise/dist/es6-promise.js" as QML_es6_promise
 
 var __filename = Qt.resolvedUrl('fetch.js').substring(7);
 var __dirname = __filename.substring(0, __filename.lastIndexOf('/'));
@@ -12,7 +12,9 @@ function require(qualifier) {
     return qualifier.module ? qualifier.module.exports : qualifier;
 }
 
-var Promise = require(QML_promise).Promise;
+var setTimeout = global.setTimeout = QML_es6_promise.global.setTimeout;
+
+var Promise = require(QML_es6_promise).Promise;
 
 (function(global) {
   'use strict';
@@ -124,7 +126,7 @@ var Promise = require(QML_promise).Promise;
   }
 
   var support = {
-    blob: 'FileReader' in global && 'Blob' in global && (function() {
+    blob: typeof FileReader !== 'undefined' && (function() {
       try {
         new Blob();
         return true
@@ -132,8 +134,8 @@ var Promise = require(QML_promise).Promise;
         return false
       }
     })(),
-    formData: 'FormData' in global,
-    arrayBuffer: 'ArrayBuffer' in global
+    formData: typeof FormData !== 'undefined',
+    arrayBuffer: typeof FileReader !== 'ArrayBuffer'
   }
 
   function Body() {
@@ -365,6 +367,13 @@ var Promise = require(QML_promise).Promise;
 
       xhr.onreadystatechange = function() {
         if (xhr.readyState === XMLHttpRequest.DONE) {
+          var status = (xhr.status === 1223) ? 204 : xhr.status
+
+          if (status < 100 || status > 599) {
+            reject(new TypeError('Network request failed'))
+            return
+          }
+
           var options = {
             status: xhr.status,
             statusText: xhr.statusText,

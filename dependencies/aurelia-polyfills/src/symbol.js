@@ -11,7 +11,10 @@ function require(qualifier) {
     return qualifier.module ? qualifier.module.exports : qualifier;
 }
 
+'use strict';
+
 (function (Object, GOPS) {
+
   // (C) Andrea Giammarchi - Mit Style
 
   if (GOPS in Object) return;
@@ -96,11 +99,11 @@ function require(qualifier) {
     defineProperty(ObjectProto, uid, descriptor);
     return source[uid] = defineProperty(Object(uid), 'constructor', sourceConstructor);
   },
-      _Symbol = function _Symbol2(description) {
+      _Symbol2 = function _Symbol3(description) {
     return setAndGetSymbol(prefix.concat(description || '', random, ++id));
   },
       source = create(null),
-      sourceConstructor = { value: _Symbol },
+      sourceConstructor = { value: _Symbol2 },
       sourceMap = function sourceMap(uid) {
     return source[uid];
   },
@@ -144,20 +147,20 @@ function require(qualifier) {
   descriptor.value = propertyIsEnumerable;
   defineProperty(ObjectProto, PIE, descriptor);
 
-  global.Symbol = _Symbol;
+  global.Symbol = _Symbol2;
 
   // defining `Symbol.for(key)`
   descriptor.value = function (key) {
     var uid = prefix.concat(prefix, key, random);
     return uid in ObjectProto ? source[uid] : setAndGetSymbol(uid);
   };
-  defineProperty(_Symbol, 'for', descriptor);
+  defineProperty(_Symbol2, 'for', descriptor);
 
   // defining `Symbol.keyFor(symbol)`
   descriptor.value = function (symbol) {
     return hOP.call(source, symbol) ? symbol.slice(prefixLength * 2, -random.length) : void 0;
   };
-  defineProperty(_Symbol, 'keyFor', descriptor);
+  defineProperty(_Symbol2, 'keyFor', descriptor);
 
   Object.getOwnPropertyDescriptor = function getOwnPropertyDescriptor(o, key) {
     var descriptor = gOPD(o, key);
@@ -194,7 +197,7 @@ function require(qualifier) {
   }
 })(Object, 'getOwnPropertySymbols');
 
-var Symbol = global.Symbol;
+var _Symbol = global.Symbol;
 
 (function (O, S) {
   var dP = O.defineProperty,
@@ -214,20 +217,20 @@ var Symbol = global.Symbol;
   'toPrimitive', // A method converting an object to a primitive value.
   toStringTag // A string value used for the default description of an object. Used by Object.prototype.toString().
   ].forEach(function (name) {
-    if (!(name in Symbol)) {
-      dP(Symbol, name, { value: Symbol(name) });
+    if (!(name in _Symbol)) {
+      dP(_Symbol, name, { value: _Symbol(name) });
       switch (name) {
         case toStringTag:
           ObjectProto.toString = function () {
             var str = toString.call(this),
-                tst = typeof this === 'undefined' || this === null ? undefined : this[Symbol.toStringTag];
+                tst = typeof this === 'undefined' || this === null ? undefined : this[_Symbol.toStringTag];
             return typeof tst === 'undefined' ? str : '[object ' + tst + ']';
           };
           break;
       }
     }
   });
-})(Object, Symbol);
+})(Object, _Symbol);
 
 (function (Si, AP, SP) {
 
@@ -268,4 +271,6 @@ var Symbol = global.Symbol;
     iterator[Si] = returnThis;
     return iterator;
   };
-})(Symbol.iterator, Array.prototype, String.prototype);
+})(_Symbol.iterator, Array.prototype, String.prototype);
+
+var Symbol = global.Symbol;
