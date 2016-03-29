@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "GITHUB",
-    "url": "git@github.com:iBeliever/quickly.git"
+    "url": "git@github.com:quickly/quickly.git"
   },
   "version": {
     "label": "0.0.5",

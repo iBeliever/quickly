@@ -4,10 +4,10 @@ QMLify
 [![npm](https://img.shields.io/npm/v/qmlify.svg)](https://www.npmjs.com/package/qmlify)
 [![npm](https://img.shields.io/npm/dt/qmlify.svg)](https://www.npmjs.com/package/qmlify)
 [![npm](https://img.shields.io/npm/l/qmlify.svg)](https://www.npmjs.com/package/qmlify)
-[![GitHub issues](https://img.shields.io/github/issues/iBeliever/quickly.svg)](https://github.com/iBeliever/quickly/issues)
-[![Travis branch](https://img.shields.io/travis/iBeliever/quickly/master.svg)](https://travis-ci.org/iBeliever/quickly)
+[![GitHub issues](https://img.shields.io/github/issues/quickly/quickly.svg)](https://github.com/quickly/quickly/issues)
+[![Travis branch](https://img.shields.io/travis/quickly/quickly/master.svg)](https://travis-ci.org/quickly/quickly)
 
-QMLify is a build tool for compiling ES6 and Node.js-like code into the custom Javascript used by QML. It is a part of the [Quickly](https://github.com/iBeliever/quickly), which provides polyfills and Node modules to emulate a Node.js environment.
+QMLify is a build tool for compiling ES6 and Node.js-like code into the custom Javascript used by QML. It is a part of the [Quickly](https://github.com/quickly/quickly), which provides polyfills and Node modules to emulate a Node.js environment.
 
 For more details, see the [Quickly](http://quickly.readthedocs.org) documentation.
 

@@ -10,9 +10,9 @@
     "qml",
     "es6"
   ],
-  "homepage": "https://github.com/iBeliever/quickly",
-  "bugs": "https://github.com/iBeliever/quickly/issues",
-  "repository": "iBeliever/quickly",
+  "homepage": "https://github.com/quickly/quickly",
+  "bugs": "https://github.com/quickly/quickly/issues",
+  "repository": "quickly/quickly",
   "main": "lib/index.js",
   "bin": {
     "qmlify": "bin/qmlify.bin.js",
