@@ -34,15 +34,13 @@ script:
   - mkdir build; pushd build
   - qmake .. && make && sudo make install
   - popd
-  - qmlify -d test/build test; cp -r test/assets test/build/
-  - xvfb-run -a -s "-screen 0 800x600x24" qmltestrunner -input test/build -import qml_imports
+  - xvfb-run -a -s "-screen 0 800x600x24" npm run test
 
   - source /opt/qt56/bin/qt56-env.sh
   - rm -r build/*; pushd build
   - qmake .. && make && sudo make install
   - popd
-  - qmlify -d test/build test; cp -r test/assets test/build/
-  - xvfb-run -a -s "-screen 0 800x600x24" qmltestrunner -input test/build -import qml_imports
+  - xvfb-run -a -s "-screen 0 800x600x24" npm run test
 
 notifications:
   webhooks:

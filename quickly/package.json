@@ -2,7 +2,7 @@
   "private": true,
   "license": "MPL-2.0",
   "scripts": {
-    "build": "qmlify --no-polyfills -d build src",
+    "build": "qmlify -d build/src-qmlified src",
     "test": "qmlify -d test/build test && cp -r test/assets test/build/ && qmltestrunner -input test/build"
   },
   "dependencies": {
