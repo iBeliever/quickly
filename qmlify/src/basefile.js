@@ -4,29 +4,35 @@ import path from 'path'
 import fs from 'fs'
 import {ImportError, Dependency} from './dependencies'
 import _ from 'lodash'
+import assert from 'assert'
 
 export class BaseFile {
     dependencies = {}
 
     constructor(filename, bundle, {out_filename, useBabel, usePolyfills, ...options} = {}) {
+        assert.ok(filename, 'Filename must provided!')
+        assert.ok(bundle, 'Bundle must be provided!')
+
         this.bundle = bundle
         this.useBabel = useBabel !== undefined ? useBabel : bundle.useBabel
         this.usePolyfills = usePolyfills !== undefined ? usePolyfills : bundle.usePolyfills
         this.options = options
 
-        this.src_filename = path.resolve('', filename)
+        this.src_filename = path.resolve(filename)
         this.src_dirname = path.dirname(this.src_filename)
+
+        if (!this.src_filename.startsWith(path.resolve(bundle.src_dirname)))
+            throw new Error('File must be inside the bundle!')
 
         const rel_filename = path.relative(bundle.src_dirname, filename)
 
-        this.out_filename = out_filename ? out_filename
+        this.out_filename = out_filename ? path.resolve(out_filename)
                                          : bundle.out_dirname ? path.resolve(bundle.out_dirname, rel_filename)
                                                               : null
         this.out_dirname = this.out_filename ? path.dirname(this.out_filename) : null
 
-        if (this.out_filename) {
-            this.filename = path.relative((bundle.parentBundle || bundle).out_dirname,
-                                        this.out_filename)
+        if (this.out_filename && bundle.out_dirname) {
+            this.filename = path.relative(bundle.out_dirname, this.out_filename)
         } else {
             this.filename = rel_filename
         }
@@ -48,11 +54,17 @@ export class BaseFile {
     }
 
     relative(filename) {
-        return path.relative(this.out_dirname ? this.out_dirname : this.bundle.src_dirname, filename)
+        return path.relative(this.out_dirname ? this.out_dirname : path.resolve(this.src_dirname),
+                             filename)
     }
 
     resolve(localFilename) {
-        return path.resolve(this.src_dirname, localFilename)
+        const filename = path.resolve(this.src_dirname, localFilename)
+
+        if (!filename.startsWith(path.resolve(this.bundle.src_dirname)))
+            throw new Error(`Resolved filename is outside of the bundle: ${localFilename} (resolved to ${filename})`)
+
+        return filename
     }
 
     require(importPath) {
