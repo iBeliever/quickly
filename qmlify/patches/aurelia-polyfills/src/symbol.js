@@ -56,7 +56,7 @@ Index: aurelia-polyfills/src/symbol.js
        keys(descriptors).concat(symbols).forEach(function (uid) {
          if (propertyIsEnumerable.call(descriptors, uid)) {
 @@ -149,15 +141,13 @@
-       defineProperties(o, descriptors);
+       $defineProperties(o, descriptors);
      }
      return o;
    };
