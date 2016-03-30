@@ -23,8 +23,7 @@ export class BaseFile {
         this.src_filename = path.resolve(filename)
         this.src_dirname = path.dirname(this.src_filename)
 
-        if (!this.src_filename.startsWith(path.resolve(bundle.src_dirname)) &&
-                !this.src_filename.includes('node_modules'))
+        if (!this.src_filename.startsWith(path.resolve(bundle.src_dirname)))
             throw new Error(`File must be inside the bundle: ${this.src_filename} (inside ${bundle.src_dirname})`)
 
         this.out_filename = out_filename ? path.resolve(out_filename)
@@ -57,6 +56,10 @@ export class BaseFile {
         return {
             'src_filename': this.src_filename,
             'out_filename': this.out_filename,
+            'bundle': {
+                'src_dirname': this.bundle.src_dirname,
+                'out_dirname': this.bundle.out_dirname
+            },
             'dependencies': _.mapValues(this.dependencies, dep => dep.json)
         }
     }
@@ -69,8 +72,7 @@ export class BaseFile {
     resolve(localFilename) {
         const filename = path.resolve(this.src_dirname, localFilename)
 
-        if (!(filename.startsWith(path.resolve(this.bundle.src_dirname)) ||
-                (this.bundle.parentBundle && filename.startsWith(path.resolve(this.bundle.parentBundle.src_dirname)))))
+        if (!(filename.startsWith(path.resolve(this.bundle.src_dirname))))
             throw new Error(`Resolved filename is outside of the bundle: ${localFilename} (resolved to ${filename})`)
 
         return filename

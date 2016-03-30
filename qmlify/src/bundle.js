@@ -178,14 +178,22 @@ export class Bundle {
                     const cache = this.rootBundle.cache[filename]
 
                     if (cache) {
+                        let bundle = this
+
+                        if (cache.bundle && cache.bundle.src_dirname !== this.src_dirname) {
+                            bundle = new Bundle(cache.bundle.src_dirname, cache.bundle.out_dirname)
+                        }
+
                         Object.assign(options, {
                             'out_filename': cache['out_filename']
                         })
 
-                        file = new fileType(cache['src_filename'], this, options)
+                        file = new fileType(cache['src_filename'], bundle, options)
                         file.loadFromCache(cache)
-                    } else {
+                    } else if (!filename.startsWith('dependencies/')) {
                         file = new fileType(this.resolve(filename), this, options)
+                    } else {
+                        throw new ImportError(`Dependency has not been built before: ${filename}`)
                     }
                 } else {
                     file = new fileType(this.resolve(filename), this, options)
