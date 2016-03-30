@@ -51,7 +51,6 @@ export class Bundle {
             const file = this.files[resource.filename]
 
             if (!file) {
-                console.error(Object.keys(this.files))
                 throw new ImportError(`Resource referenced by qmldir not found: ${resource.filename}`)
             }
 
@@ -195,8 +194,6 @@ export class Bundle {
                 if (!fs.existsSync(file.src_filename))
                     throw new ImportError(`File doesn't exist: ${filename} (resolved to ${file.src_filename})`)
 
-                console.log(file.filename, file.src_filename)
-
                 this.files[file.filename] = file
 
                 if (this.parentBundle) {
@@ -250,7 +247,6 @@ export class Bundle {
                     try {
                         return this.getFile(resource.filename, { fromCache: true}).src_filename
                     } catch (error) {
-                        console.warn(error)
                         if (error instanceof ImportError && resource.filename.startsWith('dependencies/')) {
                             return null
                         } else {

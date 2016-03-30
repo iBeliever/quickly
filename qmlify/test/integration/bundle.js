@@ -152,7 +152,6 @@ describe('Bundle', function() {
             })
 
             it('should include all the local files', function() {
-                console.log(this.bundle.dependencies())
                 expect(this.bundle.dependencies()).to.include.members([
                     this.bundle.resolve('index.js'), this.bundle.resolve('subdir/index.js')
                 ])
@@ -177,7 +176,6 @@ describe('Bundle', function() {
             })
 
             it('should include all the local files', function() {
-                console.log(this.bundle.dependencies())
                 expect(this.bundle.dependencies()).to.include.members([
                     this.bundle.resolve('index.js'), this.bundle.resolve('subdir/index.js')
                 ])
@@ -208,7 +206,6 @@ describe('Bundle', function() {
             })
 
             it('should include all the local files', function() {
-                console.log(this.bundle.dependencies())
                 expect(this.bundle.dependencies()).to.include.members([
                     this.bundle.resolve('index.js'), this.bundle.resolve('subdir/index.js')
                 ])
