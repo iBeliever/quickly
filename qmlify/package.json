@@ -19,7 +19,7 @@
     "qmlify-patch": "bin/qmlify-patch.bin.js"
   },
   "scripts": {
-    "test": "mocha --compilers js:babel-register test/unit",
+    "test": "mocha --compilers js:babel-register",
     "test:watch": "npm run test -- --watch"
   },
   "dependencies": {

@@ -24,8 +24,8 @@ export class Bundle {
     constructor(src_dirname, out_dirname, { name, parentBundle, usePolyfills = true, useBabel = true } = {}) {
         this.name = name
         this.parentBundle = parentBundle
-        this.src_dirname = src_dirname ? src_dirname : process.cwd()
-        this.out_dirname = out_dirname
+        this.src_dirname = src_dirname ? path.resolve(src_dirname) : process.cwd()
+        this.out_dirname = out_dirname ? path.resolve(out_dirname) : null
         this.usePolyfills = usePolyfills
         this.useBabel = useBabel
 
@@ -98,7 +98,12 @@ export class Bundle {
     }
 
     resolve(localFilename) {
-        return path.resolve(this.src_dirname, localFilename)
+        const filename = path.resolve(this.src_dirname, localFilename)
+
+        if (!filename.startsWith(path.resolve(this.src_dirname)))
+            throw new Error(`Resolved filename is outside of the bundle: ${localFilename} (resolved to ${filename})`)
+
+        return filename
     }
 
     build_all() {

@@ -1,8 +1,8 @@
-import '../src'
+import '../../src'
 import {expect} from 'chai'
 
-import {Bundle} from '../src/bundle'
-import {ImportError} from '../src/dependencies'
+import {Bundle} from '../../src/bundle'
+import {ImportError} from '../../src/dependencies'
 import path from 'path'
 
 describe('Bundle', function() {

@@ -18,13 +18,13 @@ export class BaseFile {
         this.usePolyfills = usePolyfills !== undefined ? usePolyfills : bundle.usePolyfills
         this.options = options
 
+        const rel_filename = path.relative(bundle.src_dirname, filename)
+
         this.src_filename = path.resolve(filename)
         this.src_dirname = path.dirname(this.src_filename)
-
+        
         if (!this.src_filename.startsWith(path.resolve(bundle.src_dirname)))
             throw new Error('File must be inside the bundle!')
-
-        const rel_filename = path.relative(bundle.src_dirname, filename)
 
         this.out_filename = out_filename ? path.resolve(out_filename)
                                          : bundle.out_dirname ? path.resolve(bundle.out_dirname, rel_filename)
@@ -32,6 +32,9 @@ export class BaseFile {
         this.out_dirname = this.out_filename ? path.dirname(this.out_filename) : null
 
         if (this.out_filename && bundle.out_dirname) {
+            assert.ok(this.out_filename.startsWith(path.resolve(bundle.out_dirname)),
+                      'out_filename should be inside the bundle\'s out_dirname')
+
             this.filename = path.relative(bundle.out_dirname, this.out_filename)
         } else {
             this.filename = rel_filename

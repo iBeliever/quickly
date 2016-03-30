@@ -1,12 +1,12 @@
-import '../src'
+import '../../src'
 import {expect} from 'chai'
 
-import {Bundle} from '../src/bundle'
-import {Package} from '../src/npmmodule'
+import {Bundle} from '../../src/bundle'
+import {Package} from '../../src/npmmodule'
 import path from 'path'
 
 describe('NPM Module', () => {
-    const base_dirname = path.resolve(__dirname, '..', '..', 'quickly')
+    const base_dirname = path.resolve(__dirname, '..', '..', '..', 'quickly')
     const src_dirname = path.resolve(base_dirname, 'src')
     const out_dirname = path.resolve(base_dirname, 'build')
 
