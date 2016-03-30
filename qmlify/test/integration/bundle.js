@@ -160,13 +160,13 @@ describe('Bundle', function() {
 
             it('should include exported npm dependencies', function() {
                 expect(this.bundle.dependencies()).to.include.members([
-                    path.resolve(__dirname, '../node_modules/lodash/index.js')
+                    path.resolve(__dirname, '../../node_modules/lodash/index.js')
                 ])
             })
 
             it('should include imported npm dependencies', function() {
                 expect(this.bundle.dependencies()).to.include.members([
-                    path.resolve(__dirname, '../node_modules/lodash/index.js')
+                    path.resolve(__dirname, '../../node_modules/lodash/index.js')
                 ])
             })
         })
@@ -185,13 +185,13 @@ describe('Bundle', function() {
 
             it('should not include exported npm dependencies', function() {
                 expect(this.bundle.dependencies()).to.not.include.members([
-                    path.resolve(__dirname, '../node_modules/lodash/index.js')
+                    path.resolve(__dirname, '../../node_modules/lodash/index.js')
                 ])
             })
 
             it('should not include imported npm dependencies', function() {
                 expect(this.bundle.dependencies()).to.not.include.members([
-                    path.resolve(__dirname, '../node_modules/lodash/index.js')
+                    path.resolve(__dirname, '../../node_modules/lodash/index.js')
                 ])
             })
         })
@@ -216,13 +216,13 @@ describe('Bundle', function() {
 
             it('should include exported npm dependencies', function() {
                 expect(this.bundle.dependencies()).to.include.members([
-                    path.resolve(__dirname, '../node_modules/lodash/index.js')
+                    path.resolve(__dirname, '../../node_modules/lodash/index.js')
                 ])
             })
 
             it('should include imported npm dependencies', function() {
                 expect(this.bundle.dependencies()).to.include.members([
-                    path.resolve(__dirname, '../node_modules/lodash/index.js')
+                    path.resolve(__dirname, '../../node_modules/lodash/index.js')
                 ])
             })
         })

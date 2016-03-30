@@ -22,26 +22,31 @@ export class BaseFile {
 
         this.src_filename = path.resolve(filename)
         this.src_dirname = path.dirname(this.src_filename)
-        
-        if (!this.src_filename.startsWith(path.resolve(bundle.src_dirname)))
-            throw new Error('File must be inside the bundle!')
+
+        if (!this.src_filename.startsWith(path.resolve(bundle.src_dirname)) &&
+                !this.src_filename.includes('node_modules'))
+            throw new Error(`File must be inside the bundle: ${this.src_filename} (inside ${bundle.src_dirname})`)
 
         this.out_filename = out_filename ? path.resolve(out_filename)
                                          : bundle.out_dirname ? path.resolve(bundle.out_dirname, rel_filename)
                                                               : null
         this.out_dirname = this.out_filename ? path.dirname(this.out_filename) : null
 
-        if (this.out_filename && bundle.out_dirname) {
-            assert.ok(this.out_filename.startsWith(path.resolve(bundle.out_dirname)),
+        if (this.out_filename && this.rootBundle.out_dirname) {
+            assert.ok(this.out_filename.startsWith(path.resolve(this.rootBundle.out_dirname)),
                       'out_filename should be inside the bundle\'s out_dirname')
 
-            this.filename = path.relative(bundle.out_dirname, this.out_filename)
+            this.filename = path.relative(this.rootBundle.out_dirname, this.out_filename)
         } else {
             this.filename = rel_filename
         }
 
         this.basename = path.basename(this.filename)
         this.local_dirname = path.dirname(this.filename)
+    }
+
+    get rootBundle() {
+        return this.bundle.parentBundle || this.bundle
     }
 
     loadFromCache(cache) {
@@ -64,7 +69,8 @@ export class BaseFile {
     resolve(localFilename) {
         const filename = path.resolve(this.src_dirname, localFilename)
 
-        if (!filename.startsWith(path.resolve(this.bundle.src_dirname)))
+        if (!(filename.startsWith(path.resolve(this.bundle.src_dirname)) ||
+                (this.bundle.parentBundle && filename.startsWith(path.resolve(this.bundle.parentBundle.src_dirname)))))
             throw new Error(`Resolved filename is outside of the bundle: ${localFilename} (resolved to ${filename})`)
 
         return filename
