@@ -13,7 +13,7 @@
 #include <QFile>
 #include <QTextStream>
 
-QString Filesystem::readFile(const QString &path) const
+QString Filesystem::readFileSync(const QString &path) const
 {
     QString resolvedPath = resolve(path);
 
