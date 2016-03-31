@@ -247,6 +247,12 @@ export class Bundle {
         const qrc = `<!DOCTYPE RCC>\n<RCC version="1.0">\n\n<qresource prefix="${prefix}">\n${resources}\n</qresource>\n\n</RCC>\n`
 
         fs.writeFileSync(path.resolve(this.out_dirname, 'resources.qrc'), qrc)
+
+        if (this.qmldir) {
+            const qmldir = fs.readFileSync(path.resolve(this.src_dirname, 'qmldir'), 'utf-8')
+
+            fs.writeFileSync(path.resolve(this.out_dirname, 'qmldir'), qmldir)
+        }
     }
 
     dependencies(source, base_dirname) {
