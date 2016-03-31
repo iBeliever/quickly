@@ -30,12 +30,14 @@ The following pollyfills are included (links are to documentation, usually on MD
 Core Modules
 ------------
 
-  - assert (exposed as Assert to qml)
-  - url (exposed as Url to qml)
-  - querystring (exposed as Querystring)
-  - punycode (exposed as Punycode)
-  - path (incomplete, exposed as Paths, not Path, because of the QtQuick.Path)
+  - assert (exposed as Assert to QML)
+  - events (exposed as Events)
   - fs (incomplete, exposed as Filesystem)
+  - path (incomplete, exposed as Paths, not Path, because of the QtQuick.Path)
+  - punycode (exposed as Punycode)
+  - querystring (exposed as Querystring)
+  - url (exposed as Url to QML)
+  - util (exposed as Util)
 
 Usage
 -----

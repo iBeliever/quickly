@@ -6,8 +6,9 @@ Polyfills 0.1 polyfills/index.js
 Promise 0.1 polyfills/promise.js
 Http 0.1 polyfills/http.js
 
-Url 0.1 dependencies/url/url.js
+Assert 0.1 dependencies/assert/assert.js
+Events 0.1 dependencies/events/events.js
 Punycode 0.1 dependencies/punycode/punycode.js
 Querystring 0.1 dependencies/querystring/index.js
-Assert 0.1 dependencies/assert/assert.js
+Url 0.1 dependencies/url/url.js
 Util 0.1 dependencies/util/util.js
