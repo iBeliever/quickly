@@ -8,12 +8,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef PLUGIN_H
-#define PLUGIN_H
+#ifndef QUICKLY_PLUGIN_H
+#define QUICKLY_PLUGIN_H
 
 #include <QQmlExtensionPlugin>
 
-class Plugin : public QQmlExtensionPlugin
+class QuicklyPlugin : public QQmlExtensionPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "com.sonrisesoftware.Quickly")
@@ -22,4 +22,4 @@ public:
     void registerTypes(const char *uri);
 };
 
-#endif // PLUGIN_H
+#endif // QUICKLY_PLUGIN_H

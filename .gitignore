@@ -1,4 +1,5 @@
 build
 node_modules
-.qmlify_cache
 _build
+coverage
+npm-debug.log

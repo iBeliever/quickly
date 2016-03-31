@@ -6,3 +6,4 @@ npm run build
 
 rm -r $QPM_DIR/*
 cp -r README.md LICENSE qpm.json qmlify.pri quickly.pri src/* build/src-qmlified/* $QPM_DIR
+sed "s/plugin quickly//" src/qmldir > $QPM_DIR/qmldir

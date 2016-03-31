@@ -4,6 +4,7 @@ import path from 'path'
 import fs from 'fs'
 import glob from 'glob'
 import shell from 'shelljs'
+import {findFile} from './util'
 
 const modules = {}
 const moduleAliases = {}
@@ -89,3 +90,8 @@ export function addImportPath(modulesDirname) {
 requireHook(requireModule)
 
 addImportPath(shell.exec('qmake -query QT_INSTALL_QML', {silent:true}).stdout.trim())
+
+const vendorPath = process.cwd().endsWith('build') ? findFile('../vendor') : findFile('vendor')
+
+if (vendorPath)
+    addImportPath(vendorPath)

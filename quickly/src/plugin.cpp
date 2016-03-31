@@ -16,13 +16,24 @@
 #include "nodejs/filesystem.h"
 #include "nodejs/path.h"
 
-void Plugin::registerTypes(const char *uri)
+class QuicklyRegisterHelper {
+
+public:
+    QuicklyRegisterHelper(const char *uri) {
+        qmlRegisterSingletonType<Filesystem>(uri, 0, 1, "Filesystem", Filesystem::qmlSingleton);
+        qmlRegisterSingletonType<Path>(uri, 0, 1, "Paths", Path::qmlSingleton);
+    }
+};
+
+void QuicklyPlugin::registerTypes(const char *uri)
 {
     // @uri Quickly
     Q_ASSERT(uri == QStringLiteral("Quickly"));
 
-    qDebug() << "Registering singletons...";
-
-    qmlRegisterSingletonType<Filesystem>(uri, 0, 1, "Filesystem", Filesystem::qmlSingleton);
-    qmlRegisterSingletonType<Path>(uri, 0, 1, "Paths", Path::qmlSingleton);
+    QuicklyRegisterHelper helper(uri);
 }
+
+// When using QPM, the C++ plugin is not used and the QML types must be registered manually
+#ifdef QPM_INIT
+    static QuicklyRegisterHelper registerHelper("Quickly");
+#endif

@@ -68,9 +68,14 @@ export class Bundle {
     }
 
     get resources() {
-        return Object.values(this.files)
+        const resources = Object.values(this.files)
             .map(file => path.relative(this.out_dirname, file.out_filename))
             .sort()
+
+        if (this.qmldir)
+            resources.push('qmldir')
+
+        return resources
     }
 
     load() {
