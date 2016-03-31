@@ -10,3 +10,4 @@ Url 0.1 dependencies/url/url.js
 Punycode 0.1 dependencies/punycode/punycode.js
 Querystring 0.1 dependencies/querystring/index.js
 Assert 0.1 dependencies/assert/assert.js
+Util 0.1 dependencies/util/util.js
