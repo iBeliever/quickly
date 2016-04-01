@@ -25,6 +25,14 @@ public:
     }
 };
 
+class QuicklyPrivateRegisterHelper {
+
+public:
+    QuicklyPrivateRegisterHelper(const char *uri) {
+        qmlRegisterSingletonType<Filesystem>(uri, 0, 1, "Filesystem", Filesystem::qmlSingleton);
+    }
+};
+
 void QuicklyPlugin::registerTypes(const char *uri)
 {
     // @uri Quickly
@@ -37,3 +45,5 @@ void QuicklyPlugin::registerTypes(const char *uri)
 #ifdef QPM_INIT
     static QuicklyRegisterHelper registerHelper("Quickly");
 #endif
+
+static QuicklyPrivateRegisterHelper privateRegisterHelper("Quickly.Private");

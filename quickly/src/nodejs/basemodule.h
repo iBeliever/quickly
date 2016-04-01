@@ -26,7 +26,6 @@ public:
 protected:
     void throwError(const QString &message) const;
 
-private:
     QQmlEngine *m_engine;
 };
 

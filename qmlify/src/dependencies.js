@@ -51,25 +51,29 @@ export function require(importPath, context) {
     assert.ok(importPath)
     assert.ok(context)
 
+    let dependency = null
+
     for (const requireHook of requireHooks) {
-        const dependency = requireHook(importPath, context)
+        dependency = requireHook(importPath, context, false)
 
-        if (dependency) {
-            if (dependency.file) {
-                if (context.filename) {
-                    addDependency(context.filename, dependency.filename)
-                }
-
-                dependency.file.build()
-
-                dependency.globals = dependency.file.exportedGlobals
-            }
-
-            return dependency
-        }
+        if (dependency)
+            break
     }
 
-    throw new ImportError(`Unable to find module: ${importPath}`)
+    if (!dependency)
+        throw new ImportError(`Unable to find module: ${importPath}`)
+
+    if (dependency.file) {
+        if (context.filename) {
+            addDependency(context.filename, dependency.filename)
+        }
+
+        dependency.file.build()
+
+        dependency.globals = dependency.file.exportedGlobals
+    }
+
+    return dependency
 }
 
 function requireLocalFile(importPath, context) {

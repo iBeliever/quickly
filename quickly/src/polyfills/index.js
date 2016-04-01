@@ -21,5 +21,9 @@ import './timeout'
 import './string'
 
 import {Promise} from 'es6-promise'
+import fs from 'Quickly.Private/Filesystem 0.1'
+import EventEmitter from 'events'
 
 global.Promise = Promise
+
+fs.setEventEmitter(EventEmitter)

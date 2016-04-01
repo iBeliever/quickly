@@ -17,4 +17,27 @@ TestCase {
             compare(error.message, "File does not exist or is not readable: missing_file.txt")
         }
     }
+
+    function test_writeFile() {
+        Filesystem.writeFileSync(Qt.resolvedUrl("out_file.txt"), "OUTPUT")
+
+        compare(Filesystem.readFileSync(Qt.resolvedUrl("out_file.txt")), "OUTPUT")
+    }
+
+    function test_watch_file() {
+        var filename = Qt.resolvedUrl("out_file.txt")
+        var watcher = Filesystem.watch(filename)
+        var event = null
+
+        watcher.on("change", function(type, filename) {
+            event = { type: type, filename: filename}
+        })
+
+        Filesystem.writeFileSync(filename, "OUTPUT")
+
+        wait(1000);
+        verify(event != null, "The event should have been emitted");
+        compare(event.type, "change")
+        compare(event.filename, filename.substring(7))
+    }
 }

@@ -31,6 +31,8 @@ export function requireModule(importPath, context) {
         if (bundle.config.dependencies && bundle.config.dependencies[importPath]) {
             version = bundle.config.dependencies[importPath]
         }
+    } else if (importPath[0].toUpperCase() === importPath[0]) {
+        ({moduleName, version, typeName} = parseImport(importPath))
     } else {
         return null
     }
@@ -40,7 +42,7 @@ export function requireModule(importPath, context) {
     const dependency = new Dependency(`${moduleName} ${version}`, moduleName.toLowerCase())
 
     dependency.typeName = typeName
-    dependency.globals = module ? typeName ? module.resources[typeName].globals
+    dependency.globals = module ? typeName ? module.resources[typeName] ? module.resources[typeName].globals : []
                                            : module.globals
                                 : []
 
