@@ -25,11 +25,13 @@ TestCase {
     }
 
     function test_watch_file() {
-        var filename = Qt.resolvedUrl("out_file.txt")
+        var filename = Qt.resolvedUrl("watched_file.txt")
         var watcher = Filesystem.watch(filename)
         var event = null
 
         Filesystem.writeFileSync(filename, "ORIGINAL")
+
+        wait(1000);
 
         watcher.on("change", function(type, filename) {
             event = { type: type, filename: filename}
