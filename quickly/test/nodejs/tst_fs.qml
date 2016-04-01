@@ -29,11 +29,13 @@ TestCase {
         var watcher = Filesystem.watch(filename)
         var event = null
 
+        Filesystem.writeFileSync(filename, "ORIGINAL")
+
         watcher.on("change", function(type, filename) {
             event = { type: type, filename: filename}
         })
 
-        Filesystem.writeFileSync(filename, "OUTPUT")
+        Filesystem.writeFileSync(filename, "CHANGED")
 
         wait(1000);
         verify(event != null, "The event should have been emitted");
