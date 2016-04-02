@@ -246,7 +246,9 @@ export class Bundle {
         const prefix = bundleInfo ? `/${bundleInfo.name}` : '/'
         const qrc = `<!DOCTYPE RCC>\n<RCC version="1.0">\n\n<qresource prefix="${prefix}">\n${resources}\n</qresource>\n\n</RCC>\n`
 
-        fs.writeFileSync(path.resolve(this.out_dirname, 'resources.qrc'), qrc)
+        const resourcesName = bundleInfo ? bundleInfo.name.toLowerCase().replace(/\./g, '_') : 'resources'
+
+        fs.writeFileSync(path.resolve(this.out_dirname, `${resourcesName}.qrc`), qrc)
 
         if (this.qmldir) {
             const qmldir = fs.readFileSync(path.resolve(this.src_dirname, 'qmldir'), 'utf-8')
