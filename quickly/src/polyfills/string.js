@@ -10,6 +10,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+if (!String.prototype.includes) {
+  String.prototype.includes = function(search, start) {
+    'use strict';
+    if (typeof start !== 'number') {
+      start = 0;
+    }
+
+    if (start + search.length > this.length) {
+      return false;
+    } else {
+      return this.indexOf(search, start) !== -1;
+    }
+  };
+}
+
 /*! http://mths.be/codepointat v0.1.0 by @mathias */
 if (!String.prototype.codePointAt) {
   (function() {
