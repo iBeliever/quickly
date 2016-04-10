@@ -26,12 +26,11 @@ TestCase {
 
     function test_watch_file() {
         var filename = Qt.resolvedUrl("watched_file.txt")
-        var watcher = Filesystem.watch(filename)
         var event = null
 
         Filesystem.writeFileSync(filename, "ORIGINAL")
 
-        wait(1000);
+        var watcher = Filesystem.watch(filename)
 
         watcher.on("change", function(type, filename) {
             event = { type: type, filename: filename}
@@ -39,7 +38,7 @@ TestCase {
 
         Filesystem.writeFileSync(filename, "CHANGED")
 
-        wait(1000);
+        wait(100);
         verify(event != null, "The event should have been emitted");
         compare(event.type, "change")
         compare(event.filename, filename.substring(7))
