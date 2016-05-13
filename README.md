@@ -33,42 +33,46 @@ And install the Quickly core library using qpm (read the docs if you don't want 
 
 Write modern ES6 like this:
 
-    import * as url from 'url'  // Use core Node modules
+```es6
+import * as url from 'url'  // Use core Node modules
 
-    const data = url.parse('http://www.google.com')
+const data = url.parse('http://www.google.com')
 
-    // Use the Promise polyfill
+// Use the Promise polyfill
 
-    const promise = new Promise((resolve, reject) => {
-        resolve('Why again did we need a promise here?')
-    })
+const promise = new Promise((resolve, reject) => {
+    resolve('Why again did we need a promise here?')
+})
 
-    // Use the Array.prototype.includes() poylfill
+// Use the Array.prototype.includes() poylfill
 
-    const array = ['A', 'B', 'C']
-    console.log(array.includes('B'))
+const array = ['A', 'B', 'C']
+console.log(array.includes('B'))
 
-    // Use ES6 classes
+// Use ES6 classes
 
-    export class Document {
-        title = ''
-        body = ''
+export class Document {
+    title = ''
+    body = ''
 
-        constructor(title, body) {
-            this.title = title
-            this.body = body
-        }
+    constructor(title, body) {
+        this.title = title
+        this.body = body
     }
+}
+```
 
 And compile that into JS that QML understands:
 
-    import "file.js" as JS
+```qml
+import "file.js" as JS
 
-    Item {
-        Component.onCompleted: {
-            var doc = new JS.Document('Hello, World', 'Contents')
-        }
+Item {
+    Component.onCompleted: {
+        var doc = new JS.Document('Hello, World', 'Contents')
     }
+}
+```
 
 ### Licensing
 

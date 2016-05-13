@@ -17,33 +17,35 @@ Install using qpm:
 
 Here are some sample uses:
 
-    import QtQuick 2.4
-    import Quickly 0.1
+```qml
+import QtQuick 2.4
+import Quickly 0.1
 
-    Item {
-        Component.onCompleted: {
-            var set = new Polyfills.Set()
-            set.add(4)
-            set.add(2)
-            set.add(4)
-            console.log(set.size) // Prints 2
+Item {
+    Component.onCompleted: {
+        var set = new Polyfills.Set()
+        set.add(4)
+        set.add(2)
+        set.add(4)
+        console.log(set.size) // Prints 2
 
-            var promise = new Promise.Promise(function(resolve, reject) {
-                resolve("Why again did we need a promise here?")
-            }).then(function(result) {
-                console.log(result)
+        var promise = new Promise.Promise(function(resolve, reject) {
+            resolve("Why again did we need a promise here?")
+        }).then(function(result) {
+            console.log(result)
+        })
+
+        Http.fetch('http://www.google.com')
+            .then(function(response) {
+                return response.text()
+            }).then(function(text) {
+                console.log(text)
             })
 
-            Http.fetch('http://www.google.com')
-                .then(function(response) {
-                    return response.text()
-                }).then(function(text) {
-                    console.log(text)
-                })
-
-            var url = Url.parse('http://www.google.com')
-        }
+        var url = Url.parse('http://www.google.com')
     }
+}
+```
 
 ### Acknowledgements
 
