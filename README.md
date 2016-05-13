@@ -33,6 +33,7 @@ And install the Quickly core library using qpm (read the docs if you don't want 
 
 Write modern ES6 like this:
 
+```es6
     import * as url from 'url'  // Use core Node modules
 
     const data = url.parse('http://www.google.com')
@@ -59,9 +60,11 @@ Write modern ES6 like this:
             this.body = body
         }
     }
+```
 
 And compile that into JS that QML understands:
 
+```qml
     import "file.js" as JS
 
     Item {
@@ -69,6 +72,7 @@ And compile that into JS that QML understands:
             var doc = new JS.Document('Hello, World', 'Contents')
         }
     }
+```
 
 ### Licensing
 
