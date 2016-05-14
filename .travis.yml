@@ -16,10 +16,8 @@ install:
   - sudo add-apt-repository -y ppa:beineri/opt-qt551-trusty
   - sudo add-apt-repository -y ppa:beineri/opt-qt56-trusty
   - sudo apt-get update
-  - sudo apt-get -y install qt55declarative
-  - sudo apt-get -y install qt55tools
-  - sudo apt-get -y install qt56declarative
-  - sudo apt-get -y install qt56tools
+  - sudo apt-get -y install qt55declarative qt55tools
+  - sudo apt-get -y install qt56declarative qt56tools
   - sudo apt-get -y install xvfb
 
 script:
