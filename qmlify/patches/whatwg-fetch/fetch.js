@@ -21,9 +21,9 @@ Index: whatwg-fetch/fetch.js
  
    var support = {
 -    blob: 'FileReader' in self && 'Blob' in self && (function() {
-+    blob: typeof FileReader !== 'undefined' && (function() {
++    blob: typeof FileReader !== 'undefined' && typeof Blob !== 'undefined' && (function() {
        try {
-         new Blob();
+         new Blob()
          return true
        } catch(e) {
          return false
@@ -42,12 +42,12 @@ Index: whatwg-fetch/fetch.js
      return new Response(null, {status: status, headers: {location: url}})
    }
  
--  self.Headers = Headers;
--  self.Request = Request;
--  self.Response = Response;
-+  global.Headers = Headers;
-+  global.Request = Request;
-+  global.Response = Response;
+-  self.Headers = Headers
+-  self.Request = Request
+-  self.Response = Response
++  global.Headers = Headers
++  global.Request = Request
++  global.Response = Response
  
 -  self.fetch = function(input, init) {
 +  global.fetch = function(input, init) {
@@ -55,9 +55,9 @@ Index: whatwg-fetch/fetch.js
        var request
        if (Request.prototype.isPrototypeOf(input) && !init) {
          request = input
-@@ -347,26 +349,32 @@
+@@ -347,30 +349,33 @@
  
-         return;
+         return
        }
  
 -      xhr.onload = function() {
@@ -78,6 +78,7 @@ Index: whatwg-fetch/fetch.js
 +            headers: headers(xhr),
 +            url: responseURL()
 +          }
++
 +          var body = 'response' in xhr ? xhr.response : xhr.responseText;
 +          resolve(new Response(body, options))
 +        } else if (xhr.readyState === XMLHttpRequest.ERROR) {
@@ -90,19 +91,22 @@ Index: whatwg-fetch/fetch.js
 -          headers: headers(xhr),
 -          url: responseURL()
 -        }
--        var body = 'response' in xhr ? xhr.response : xhr.responseText;
+-        var body = 'response' in xhr ? xhr.response : xhr.responseText
 -        resolve(new Response(body, options))
        }
  
 -      xhr.onerror = function() {
 -        reject(new TypeError('Network request failed'))
-+      xhr.ontimeout = function() {
+-      }
+-
+       xhr.ontimeout = function() {
+-        reject(new TypeError('Network request failed'))
 +        reject(new TypeError('Network request timed out'))
        }
  
        xhr.open(request.method, request.url, true)
  
-@@ -384,6 +392,6 @@
+@@ -388,6 +393,6 @@
  
        xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
      })

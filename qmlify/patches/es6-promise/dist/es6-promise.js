@@ -4,7 +4,7 @@ Index: es6-promise/dist/es6-promise.js
 +++ es6-promise/dist/es6-promise.js
 @@ -5,8 +5,10 @@
   *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
-  * @version   3.1.2
+  * @version   3.2.1
   */
  
 +require('./polyfills/timeout');
@@ -21,7 +21,7 @@ Index: es6-promise/dist/es6-promise.js
 -    var lib$es6$promise$asap$$browserWindow = (typeof window !== 'undefined') ? window : undefined;
 -    var lib$es6$promise$asap$$browserGlobal = lib$es6$promise$asap$$browserWindow || {};
 -    var lib$es6$promise$asap$$BrowserMutationObserver = lib$es6$promise$asap$$browserGlobal.MutationObserver || lib$es6$promise$asap$$browserGlobal.WebKitMutationObserver;
--    var lib$es6$promise$asap$$isNode = typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
+-    var lib$es6$promise$asap$$isNode = typeof self === 'undefined' && typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
 -
 -    // test for web worker but not in IE10
 -    var lib$es6$promise$asap$$isWorker = typeof Uint8ClampedArray !== 'undefined' &&
@@ -100,9 +100,9 @@ Index: es6-promise/dist/es6-promise.js
 -    }
      function lib$es6$promise$then$$then(onFulfillment, onRejection) {
        var parent = this;
-       var state = parent._state;
  
-@@ -939,15 +873,8 @@
+       var child = new this.constructor(lib$es6$promise$$internal$$noop);
+@@ -944,15 +878,8 @@
        'Promise': lib$es6$promise$promise$$default,
        'polyfill': lib$es6$promise$polyfill$$default
      };
