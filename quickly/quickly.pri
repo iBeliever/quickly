@@ -14,4 +14,4 @@ SOURCES += $$PWD/plugin.cpp \
            $$PWD/nodejs/process.cpp \
            $$PWD/nodejs/basemodule.cpp
 
-RESOURCES += $$PWD/quickly.qrc
+RESOURCES += $$PWD/resources.qrc
