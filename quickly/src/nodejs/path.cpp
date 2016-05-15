@@ -92,6 +92,13 @@ bool Path::isAbsolute(const QString &path) const
     return QFileInfo(path).isAbsolute();
 }
 
+QString Path::join(const QStringList &paths) const
+{
+    QString joinedPath = QDir::cleanPath(paths.join("/"));
+
+    return joinedPath.isEmpty() ? "." : joinedPath;
+}
+
 QObject *Path::qmlSingleton(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)

@@ -35,6 +35,30 @@ public:
     Q_INVOKABLE QVariantMap parse(QString path) const;
     Q_INVOKABLE bool isAbsolute(const QString &path) const;
 
+    Q_INVOKABLE QString join() const { return join(QStringList()); }
+    Q_INVOKABLE QString join(const QString &path1) const { return join(QStringList() << path1); }
+    Q_INVOKABLE QString join(const QString &path1, const QString &path2) const {
+        return join({path1, path2});
+    }
+    Q_INVOKABLE QString join(const QString &path1, const QString &path2,
+                             const QString &path3) const {
+        return join({path1, path2, path3});
+    }
+    Q_INVOKABLE QString join(const QString &path1, const QString &path2, const QString &path3,
+                             const QString &path4) const {
+        return join({path1, path2, path3, path4});
+    }
+    Q_INVOKABLE QString join(const QString &path1, const QString &path2, const QString &path3,
+                             const QString &path4, const QString &path5) const {
+        return join({path1, path2, path3, path4, path5});
+    }
+    Q_INVOKABLE QString join(const QString &path1, const QString &path2, const QString &path3,
+                             const QString &path4, const QString &path5,
+                             const QString &path6) const {
+        return join({path1, path2, path3, path4, path5, path6});
+    }
+    Q_INVOKABLE QString join(const QStringList &paths) const;
+
     static QObject *qmlSingleton(QQmlEngine *engine, QJSEngine *scriptEngine);
 };
 

@@ -34,4 +34,16 @@ TestCase {
     function test_extname(data) {
         compare(Paths.extname(data.actual), data.expected)
     }
+
+    function test_join_one_path() {
+        compare(Paths.join('path1'), 'path1')
+    }
+
+    function test_join_two_paths() {
+        compare(Paths.join('path1', 'path2'), 'path1/path2')
+    }
+
+    function test_join_four_paths() {
+        compare(Paths.join('/root', 'path', 'to', 'dir'), '/root/path/to/dir')
+    }
 }
