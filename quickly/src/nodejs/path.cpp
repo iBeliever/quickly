@@ -97,11 +97,18 @@ QString Path::join(const QStringList &paths) const
     return normalize(paths.join("/"));
 }
 
-QString Path::normalize(const QString path) const
+QString Path::normalize(const QString &path) const
 {
     QString cleanedPath = QDir::cleanPath(path);
 
     return cleanedPath.isEmpty() ? "." : cleanedPath;
+}
+
+QString Path::relative(const QString &from, const QString &to) const
+{
+    QDir dir(from);
+
+    return dir.relativeFilePath(to);
 }
 
 QObject *Path::qmlSingleton(QQmlEngine *engine, QJSEngine *scriptEngine)

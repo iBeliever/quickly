@@ -54,4 +54,8 @@ TestCase {
     function test_normalize_empty_path() {
         compare(Paths.normalize(''), '.')
     }
+
+    function test_relative() {
+        compare(Paths.relative('/path/to/dir', '/path/or/not'), '../../or/not')
+    }
 }
