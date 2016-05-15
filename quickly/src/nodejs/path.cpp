@@ -94,9 +94,14 @@ bool Path::isAbsolute(const QString &path) const
 
 QString Path::join(const QStringList &paths) const
 {
-    QString joinedPath = QDir::cleanPath(paths.join("/"));
+    return normalize(paths.join("/"));
+}
 
-    return joinedPath.isEmpty() ? "." : joinedPath;
+QString Path::normalize(const QString path) const
+{
+    QString cleanedPath = QDir::cleanPath(path);
+
+    return cleanedPath.isEmpty() ? "." : cleanedPath;
 }
 
 QObject *Path::qmlSingleton(QQmlEngine *engine, QJSEngine *scriptEngine)

@@ -44,6 +44,14 @@ TestCase {
     }
 
     function test_join_four_paths() {
-        compare(Paths.join('/root', 'path', 'to', 'dir'), '/root/path/to/dir')
+        compare(Paths.join('/root', 'path', '..', 'dir'), '/root/dir')
+    }
+
+    function test_normalize() {
+        compare(Paths.normalize('/usr/local/../bin'), '/usr/bin')
+    }
+
+    function test_normalize_empty_path() {
+        compare(Paths.normalize(''), '.')
     }
 }

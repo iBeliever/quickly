@@ -59,6 +59,8 @@ public:
     }
     Q_INVOKABLE QString join(const QStringList &paths) const;
 
+    Q_INVOKABLE QString normalize(const QString path) const;
+
     static QObject *qmlSingleton(QQmlEngine *engine, QJSEngine *scriptEngine);
 };
 
