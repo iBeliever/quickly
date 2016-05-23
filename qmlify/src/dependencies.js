@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import assert from 'assert'
 import {Bundle} from './bundle'
+import {isDir} from './util'
 
 const dependencyMap = {}
 const requireHooks = [requireLocalFile]
@@ -83,10 +84,13 @@ function requireLocalFile(importPath, context) {
     if (context instanceof Bundle)
         return null
 
-    if (importPath.endsWith('.js'))
-        throw new ImportError(`Don't include the '.js' extension when importing local files: ${importPath}`)
+    if (isDir(context.resolve(importPath)) || (context.bundle.parentBundle && isDir(context.bundle.parentBundle.resolve(importPath))))
+        importPath += '/index'
 
-    const filename = path.normalize(`${importPath}.js`)
+    if (!importPath.endsWith('.js'))
+        importPath += '.js'
+
+    const filename = path.normalize(importPath)
 
     if (fs.existsSync(context.resolve(filename))) {
         const file = context.bundle.build(context.resolve(filename))

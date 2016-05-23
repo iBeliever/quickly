@@ -5,7 +5,7 @@ export const NOT_FOUND = -1
 export const JSON_INDENT_LEVEL = 2
 
 export function isDir(filename) {
-    return fs.statSync(filename).isDirectory()
+    return fs.existsSync(filename) && fs.statSync(filename).isDirectory()
 }
 
 export function getConfigFile(filename, dirname) {

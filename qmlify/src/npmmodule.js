@@ -1,6 +1,6 @@
 import {Bundle} from './bundle'
 import {requireHook, Dependency} from './dependencies'
-import {findFile} from './util'
+import {findFile, isDir} from './util'
 import {patch} from './patching'
 import fs from 'fs'
 import path from 'path'
@@ -33,7 +33,16 @@ export class Package extends Bundle {
     require(filename) {
         if (!filename)
             filename = this.main_filename
-        return this.getFile(path.resolve(this.src_dirname, filename), { useBabel: filename.includes('src' ) })
+
+        if (isDir(path.resolve(this.src_dirname, filename))) {
+            return this.getFile(path.resolve(this.src_dirname, `${filename}/index.js`),
+                                { useBabel: filename.includes('src' ) })
+        } else {
+            if (!filename.endsWith('.js'))
+                filename += '.js'
+            return this.getFile(path.resolve(this.src_dirname, filename),
+                                { useBabel: filename.includes('src' ) })
+        }
     }
 
     get main_filename() {
@@ -66,7 +75,7 @@ export function requireModule(importPath, context) {
     if (importPath.includes('/')) {
         [moduleName, ...filename] = importPath.split('/')
 
-        filename = filename[0] ? filename.join('/') + '.js' : null
+        filename = filename[0] ? filename.join('/') : null
     }
 
     if (moduleName.endsWith('.js'))
